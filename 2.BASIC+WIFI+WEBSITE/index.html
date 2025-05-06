@@ -149,17 +149,19 @@
             <table id="history-table" style="width:100%;border-collapse:collapse;">
                 <thead>
                     <tr style="background:#f1f1f1;">
-                        <th style="padding:8px;border-bottom:1px solid #ddd;">Time</th>
-                        <th style="padding:8px;border-bottom:1px solid #ddd;">Device</th>
-                        <th style="padding:8px;border-bottom:1px solid #ddd;">Heart Rate (bpm)</th>
-                        <th style="padding:8px;border-bottom:1px solid #ddd;">SpO₂ (%)</th>
-                        <th style="padding:8px;border-bottom:1px solid #ddd;">Temp (°C)</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center; width:40px;">No</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center;">Time</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center;">Device</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center;">Heart Rate (bpm)</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center;">SpO₂ (%)</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd; text-align:center;">Temp (°C)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Data will be injected here -->
                 </tbody>
             </table>
+            <div id="pagination-controls" style="margin-top:16px; text-align:center;"></div>
         </div>
     </div>
 
@@ -173,67 +175,94 @@
 
         // Fungsi untuk render data baru dari event realtime
         function renderData(row) {
-            const val = row.sensor_value || {};
-            document.getElementById('heart-rate').textContent = val.heartRate ?? '--';
-            document.getElementById('spo2').textContent = val.spo2 ?? '--';
-            document.getElementById('temperature').textContent = val.temp ?? '--';
-            document.getElementById('last-updated').textContent = new Date(row.created_at).toLocaleTimeString();
-
-            // Tambahkan ke tabel history di paling atas
-            const table = document.getElementById('history-table').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow(0);
-            newRow.innerHTML = `
-                <td style="padding:8px;border-bottom:1px solid #ddd;">${new Date(row.created_at).toLocaleTimeString()}</td>
-                <td style="padding:8px;border-bottom:1px solid #ddd;">${row.device_id ?? '--'}</td>
-                <td style="padding:8px;border-bottom:1px solid #ddd;">${val.heartRate ?? '--'}</td>
-                <td style="padding:8px;border-bottom:1px solid #ddd;">${val.spo2 ?? '--'}</td>
-                <td style="padding:8px;border-bottom:1px solid #ddd;">${val.temp ?? '--'}</td>
-            `;
-
-            // Tambahkan ke chart
-            chart.data.labels.push(new Date(row.created_at).toLocaleTimeString());
-            chart.data.datasets[0].data.push(val.heartRate ?? null);
-            // Batasi jumlah data di chart (misal 10)
-            if (chart.data.labels.length > 10) {
-                chart.data.labels.shift();
-                chart.data.datasets[0].data.shift();
-            }
-            chart.update();
-
-            // Deteksi anomali
-            checkAnomalies(val);
+            // Sinkronisasi penuh agar chart & tabel konsisten
+            updateDashboard();
         }
 
-        // Inisialisasi Chart
+        // Inisialisasi Chart dengan 3 dataset: Heart Rate, SpO2, Temp
         const ctx = document.getElementById('healthChart').getContext('2d');
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
-                datasets: [{
-                    label: 'Heart Rate (bpm)',
-                    data: [],
-                    borderColor: '#2A9D8F',
-                    tension: 0.4
-                }]
+                datasets: [
+                    {
+                        label: 'Heart Rate (bpm)',
+                        data: [],
+                        borderColor: '#2A9D8F',
+                        backgroundColor: 'rgba(42,157,143,0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'SpO₂ (%)',
+                        data: [],
+                        borderColor: '#E9C46A',
+                        backgroundColor: 'rgba(233,196,106,0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                    },
+                    {
+                        label: 'Temp (°C)',
+                        data: [],
+                        borderColor: '#E76F51',
+                        backgroundColor: 'rgba(231,111,81,0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y2',
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 plugins: {
                     legend: { position: 'top' }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Heart Rate (bpm)' },
+                        min: 40,
+                        max: 140
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'SpO₂ (%)' },
+                        min: 80,
+                        max: 100,
+                        grid: { drawOnChartArea: false }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Temp (°C)' },
+                        min: 30,
+                        max: 45,
+                        grid: { drawOnChartArea: false },
+                        offset: true
+                    }
                 }
             }
         });
 
+        // State untuk paginasi
+        let allHistoryData = [];
+        let currentPage = 1;
+        const PAGE_SIZE = 20;
+
         // Fungsi untuk update UI
         async function updateDashboard() {
             try {
-                // Ambil 10 data terbaru dengan urutan DESCENDING
+                // Ambil 500 data terbaru dengan urutan DESCENDING
                 const { data, error } = await supabase
                     .from('sensor_data')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(10);
+                    .limit(500);
 
                 if (error) throw error;
 
@@ -258,11 +287,16 @@
                 if (reversedData && reversedData.length > 0) {
                     chart.data.labels = reversedData.map(d => new Date(d.created_at).toLocaleTimeString());
                     chart.data.datasets[0].data = reversedData.map(d => d.sensor_value?.heartRate ?? null);
+                    chart.data.datasets[1].data = reversedData.map(d => d.sensor_value?.spo2 ?? null);
+                    chart.data.datasets[2].data = reversedData.map(d => d.sensor_value?.temp ?? null);
                     chart.update();
                 }
 
-                // Update history table dengan data asli (DESC)
-                updateHistoryTable(data);
+                // Simpan semua data history untuk paginasi
+                allHistoryData = data || [];
+                // Reset ke halaman 1 setiap update
+                currentPage = 1;
+                updateHistoryTable();
 
                 // Check anomalies
                 checkAnomalies(metrics);
@@ -272,28 +306,71 @@
             }
         }
 
-        // Fungsi update tabel history
-        function updateHistoryTable(data) {
+        // Fungsi update tabel history dengan paginasi
+        function updateHistoryTable() {
             const tbody = document.querySelector('#history-table tbody');
             tbody.innerHTML = '';
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No data</td></tr>';
+            const totalData = allHistoryData.length;
+            if (totalData === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No data</td></tr>';
+                document.getElementById('pagination-controls').innerHTML = '';
                 return;
             }
-            // Loop data tanpa di-reverse karena sudah DESC
-            data.forEach(row => {
+            // Hitung data untuk halaman saat ini
+            const startIdx = (currentPage - 1) * PAGE_SIZE;
+            const endIdx = Math.min(startIdx + PAGE_SIZE, totalData);
+            // Data sudah DESC, urutkan ASC untuk tabel
+            const sortedData = [...allHistoryData].reverse();
+            const pageData = sortedData.slice(startIdx, endIdx);
+
+            pageData.forEach((row, idx) => {
                 const val = row.sensor_value || {};
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(row.created_at).toLocaleTimeString()}</td>
-                    <td style="padding:6px;border-bottom:1px solid #eee;">${row.device_id ?? '--'}</td>
-                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.heartRate ?? '--'}</td>
-                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.spo2 ?? '--'}</td>
-                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.temp ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${totalData - (startIdx + idx)}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${new Date(row.created_at).toLocaleTimeString()}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${row.device_id ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${val.heartRate ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${val.spo2 ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee; text-align:center;">${val.temp ?? '--'}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            renderPaginationControls(totalData);
         }
+
+        // Render tombol paginasi
+        function renderPaginationControls(totalData) {
+            const totalPages = Math.ceil(totalData / PAGE_SIZE);
+            const container = document.getElementById('pagination-controls');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            let html = '';
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="gotoPage(1)">&#171;</button>`;
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="gotoPage(${currentPage - 1})">&#8249;</button>`;
+            // Show up to 5 page numbers
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+            if (currentPage <= 2) endPage = Math.min(5, totalPages);
+            if (currentPage >= totalPages - 1) startPage = Math.max(1, totalPages - 4);
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button ${i === currentPage ? 'style="font-weight:bold;background:#eee;" disabled' : ''} onclick="gotoPage(${i})">${i}</button>`;
+            }
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="gotoPage(${currentPage + 1})">&#8250;</button>`;
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="gotoPage(${totalPages})">&#187;</button>`;
+            container.innerHTML = html;
+        }
+
+        // Fungsi global untuk navigasi halaman
+        window.gotoPage = function(page) {
+            const totalPages = Math.ceil(allHistoryData.length / PAGE_SIZE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            updateHistoryTable();
+        };
 
         // Fungsi deteksi anomali
         function checkAnomalies(metrics) {
@@ -316,29 +393,18 @@
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'sensor_data' },
                 payload => {
-                    updateDashboard();
+                    const newRow = payload.new;
+                    renderData(newRow); // updateDashboard() dipanggil di renderData
                 }
             )
             .subscribe();
 
-        // Listener realtime untuk tabel sensor_data
-        supabase
-          .channel('public:sensor_data')
-          .on('postgres_changes', {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'sensor_data'
-          }, payload => {
-            const newRow = payload.new;
-            renderData(newRow);
-          })
-          .subscribe();
-
         // Initial load
         updateDashboard();
 
-        // Fallback polling jika realtime gagal (opsional, bisa diaktifkan jika perlu)
-        // setInterval(updateDashboard, 10000);
+        // Fallback polling setiap 3 detik
+        const POLL_INTERVAL = 3000;
+        setInterval(updateDashboard, POLL_INTERVAL);
     </script>
 </body>
 </html>
