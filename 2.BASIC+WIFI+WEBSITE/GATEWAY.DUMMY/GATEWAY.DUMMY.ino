@@ -14,7 +14,7 @@ const char* supabaseApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 const char* supabaseTableEndpoint = "/rest/v1/sensor_data"; // ganti dengan nama tabel Anda
 
 // Tambahkan device_id (nama ESP32)
-const char* device_id = "ESP32-ROOM1"; // Ganti sesuai nama/ID ESP32 Anda
+const char* device_id = "ANOP"; // Ganti sesuai nama/ID ESP32 Anda
 
 // Fungsi untuk mengirim data ke Supabase
 void sendToSupabase(int heartRate, int validHeartRate, int spo2, int validSpO2, float temp, const char* device_id) {
@@ -89,5 +89,5 @@ void loop() {
     Serial.println("WiFi not connected, data not sent.");
   }
 
-  delay(5000);
+  delay(10000);
 }

@@ -1,45 +1,48 @@
 // Kode GATEWAY (ESP32) dengan BLE, belum wifi fix
-#include <Wire.h>
-#include <MPU6500_WE.h>
-#include <TinyGPSPlus.h>
-#include <HardwareSerial.h>
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEClient.h>
-#include <BLEScan.h>
+
+#include <Wire.h> // Library komunikasi I2C
+#include <MPU6500_WE.h> // Library sensor MPU6500
+#include <TinyGPSPlus.h> // Library GPS
+#include <HardwareSerial.h> // Library serial hardware tambahan
+#include <BLEDevice.h> // Library BLE utama ESP32
+#include <BLEUtils.h> // Library utilitas BLE
+#include <BLEClient.h> // Library BLE client
+#include <BLEScan.h> // Library BLE scanning
 
 // --- Konfigurasi MPU6500 ---
-#define MPU6500_ADDR 0x68
-MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
+#define MPU6500_ADDR 0x68 // Alamat I2C default MPU6500
+MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR); // Inisialisasi objek MPU6500
 
 // --- Konfigurasi GPS ---
-TinyGPSPlus gps;
-HardwareSerial gpsSerial(2);  // UART2: RX=16, TX=17
+TinyGPSPlus gps; // Objek parser GPS
+HardwareSerial gpsSerial(2);  // UART2: RX=16, TX=17 // Serial hardware untuk GPS
 
 // --- Konfigurasi BLE Client ---
-static BLEUUID serviceUUID("89bc34b8-c3a1-4f22-82d9-00a2559bbcc0");
-static BLEUUID charUUID("cbef4b5c-fe06-41dc-ab84-105dbe7a722c");
+static BLEUUID serviceUUID("89bc34b8-c3a1-4f22-82d9-00a2559bbcc0"); // UUID service BLE yang dicari
+static BLEUUID charUUID("cbef4b5c-fe06-41dc-ab84-105dbe7a722c"); // UUID characteristic BLE yang dicari
 
-static boolean doConnect = false;
-static boolean connected = false;
-static boolean doScan = false;
-static bool isScanning = false; // Tambahkan variabel untuk melacak status pemindaian
-static BLERemoteCharacteristic *pRemoteCharacteristic;
-static BLEAdvertisedDevice *myDevice;
+static boolean doConnect = false; // Flag untuk memulai koneksi BLE
+static boolean connected = false; // Status koneksi BLE
+static boolean doScan = false; // Flag untuk memulai scan BLE
+static bool isScanning = false; // Status pemindaian BLE
+static BLERemoteCharacteristic *pRemoteCharacteristic; // Pointer ke characteristic remote BLE
+static BLEAdvertisedDevice *myDevice; // Pointer ke device BLE yang ditemukan
 
+// Callback untuk notifikasi BLE
 static void notifyCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify) {
   Serial.print("BLE Notify dari Node: ");
-  Serial.write(pData, length);
+  Serial.write(pData, length); // Tampilkan data notifikasi
   Serial.println();
 }
 
+// Callback untuk event koneksi/disconnect BLE client
 class MyClientCallback : public BLEClientCallbacks {
-  void onConnect(BLEClient *pclient) {
+  void onConnect(BLEClient *pclient) { // Saat terkoneksi ke server BLE
     connected = true;
     Serial.println("Terhubung ke BLE Node!");
   }
 
-  void onDisconnect(BLEClient *pclient) {
+  void onDisconnect(BLEClient *pclient) { // Saat terputus dari server BLE
     connected = false;
     Serial.println("Terputus dari BLE Node.");
   }
@@ -49,15 +52,15 @@ bool connectToServer() {
   Serial.print("Mencoba terhubung ke perangkat BLE: ");
   Serial.println(myDevice->getAddress().toString().c_str());
 
-  BLEClient *pClient = BLEDevice::createClient();
+  BLEClient *pClient = BLEDevice::createClient(); // Buat client BLE
   Serial.println(" - Membuat client BLE");
 
-  pClient->setClientCallbacks(new MyClientCallback());
+  pClient->setClientCallbacks(new MyClientCallback()); // Set callback client
 
   // Hubungkan ke server BLE remote.
   pClient->connect(myDevice);
   Serial.println(" - Terhubung ke server BLE");
-  pClient->setMTU(517);
+  pClient->setMTU(517); // Set MTU
 
   // Dapatkan referensi ke service yang dicari di server BLE remote.
   BLERemoteService *pRemoteService = pClient->getService(serviceUUID);
@@ -80,18 +83,19 @@ bool connectToServer() {
   Serial.println(" - Characteristic ditemukan");
 
   if (pRemoteCharacteristic->canRead()) {
-    String value = pRemoteCharacteristic->readValue();
+    String value = pRemoteCharacteristic->readValue(); // Baca nilai characteristic
     Serial.print("Nilai characteristic awal: ");
     Serial.println(value.c_str());
   }
 
   if (pRemoteCharacteristic->canNotify()) {
-    pRemoteCharacteristic->registerForNotify(notifyCallback);
+    pRemoteCharacteristic->registerForNotify(notifyCallback); // Daftarkan callback notifikasi
   }
 
   return true;
 }
 
+// Callback untuk event pemindaian BLE
 class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
     Serial.print("Perangkat BLE ditemukan: ");
