@@ -42,7 +42,18 @@ Generate dan tambahkan kedalam kode lalu samakan UUID-nya antara UUID pada kode 
 ![KODE UUID NODE](7.UUID-Node.png)
 
 
-### 7. CATATAN
+### 7. Hasil yang diharapkan
+Berikut hasil dari kedua kode pada serial monitor jika semua konfigurasi benar
+
+7.1 ESP32 Node
+![Hasil pada serial monitor Node](9.Hasil-Node-1.png)
+
+![Hasil pada serial monitor Node](10.Hasil-Node-2.png)
+
+7.2 ESP32 Gateway
+![Hasil pada serial monitor Gateway](11.Hasil-Gateway.png)
+
+### 8. CATATAN
 - Selalu ingat nomor port untuk ESP32 Node dan ESP32 Gateway dan setiap upload program (kode)
 - Restart ESP32, dengan menekan tombol EN pada board ESP32
 
