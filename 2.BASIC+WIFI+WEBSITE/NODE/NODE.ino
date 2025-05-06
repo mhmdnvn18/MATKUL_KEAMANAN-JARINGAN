@@ -135,7 +135,9 @@ void loop() {
     Serial.println(")");
 
     // Kirim data ke gateway lewat BLE
-    String data = "Temp:" + String(objectTemp) + "C, BPM:" + String(heartRate) + ", SpO2:" + String(spo2) + "%";
+    String data = "{\"heartRate\":" + String(heartRate) +
+                  ",\"spo2\":" + String(spo2) +
+                  ",\"temp\":" + String(objectTemp, 1) + "}";
     pCharacteristic->setValue(data.c_str()); // Set nilai characteristic BLE
     pCharacteristic->notify(); // Kirim notifikasi BLE
   } else {

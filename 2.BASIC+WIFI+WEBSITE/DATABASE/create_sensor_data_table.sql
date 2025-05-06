@@ -18,3 +18,11 @@ CREATE POLICY "Allow insert for all"
   ON sensor_data
   FOR INSERT
   WITH CHECK (true);
+
+-- Dummy data insert example
+INSERT INTO sensor_data (sensor_value)
+VALUES
+  ('{"heartRate": 78, "spo2": 98, "temp": 36.5}'),
+  ('{"heartRate": 85, "spo2": 97, "temp": 36.8}'),
+  ('{"heartRate": 92, "spo2": 96, "temp": 37.1}'),
+  ('{"heartRate": 60, "spo2": 99, "temp": 36.2}');

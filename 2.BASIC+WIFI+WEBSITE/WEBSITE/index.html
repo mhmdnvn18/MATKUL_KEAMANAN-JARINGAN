@@ -145,6 +145,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Inisialisasi Chart
         const ctx = document.getElementById('healthChart').getContext('2d');
@@ -166,6 +167,11 @@
                 }
             }
         });
+
+        // Supabase Realtime
+        const supabaseUrl = 'https://cvmsregwxtcvxdspxysq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // Fungsi untuk update UI
         async function updateDashboard() {
@@ -228,9 +234,17 @@
             alertBanner.style.display = showAlert ? 'block' : 'none';
         }
 
-        // Update setiap 3 detik
-        setInterval(updateDashboard, 3000);
+        // Realtime listener
+        supabase.channel('sensor_data_changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'sensor_data' }, payload => {
+                updateDashboard();
+            })
+            .subscribe();
+
+        // Initial load
         updateDashboard();
+        // Hapus/komentari interval polling jika ingin hanya realtime:
+        // setInterval(updateDashboard, 3000);
     </script>
 </body>
 </html>

@@ -1,5 +1,4 @@
 // GATEWAY ESP32 BLE + WiFi + Supabase JSON
-#include <Wire.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <BLEDevice.h>
