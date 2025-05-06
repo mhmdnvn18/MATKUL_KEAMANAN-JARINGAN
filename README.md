@@ -8,9 +8,12 @@ flowchart TD
         A[Sensor MLX90614] -- I2C --> B[ESP32 Node]
         B1[Sensor MAX30105] -- I2C --> B
     end
-    B -- BLE --> C[ESP32 Gateway]
-    E[MPU6500] -- I2C --> C
-    F[Neo-6M GPS] -- UART --> C
+    B -- BLE --> C
+    subgraph GATEWAY
+        C[ESP32 Gateway]
+        E[MPU6500] -- I2C --> C
+        F[Neo-6M GPS] -- UART --> C
+    end
     C -- Serial --> D[PC / Serial Monitor]
 ```
 
