@@ -186,12 +186,8 @@
                 const [latestData] = await response.json();
                 let metrics = { heartRate: '--', spo2: '--', temp: '--' };
                 if (latestData && latestData.sensor_value) {
-                    try {
-                        metrics = JSON.parse(latestData.sensor_value);
-                    } catch (e) {
-                        // fallback if not JSON
-                        metrics = { heartRate: latestData.heart_rate || '--', spo2: latestData.spo2 || '--', temp: latestData.temperature || '--' };
-                    }
+                    // sensor_value sudah berupa objek JSON jika tipe kolom JSONB
+                    metrics = latestData.sensor_value;
                 }
 
                 // Update real-time values

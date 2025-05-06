@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS sensor_data CASCADE;
 
 CREATE TABLE IF NOT EXISTS sensor_data (
     id SERIAL PRIMARY KEY,
-    sensor_value TEXT NOT NULL,
+    sensor_value JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
