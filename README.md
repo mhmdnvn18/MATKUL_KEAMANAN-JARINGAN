@@ -6,9 +6,9 @@
 flowchart TD
     A[Sensor MLX90614 & MAX30105] -->|I2C| B[ESP32 Node]
     B -->|BLE| C[ESP32 Gateway]
+    E[MPU6500]  |I2C| --> C
+    F[Neo-6M GPS] |UART| --> C
     C -->|Serial| D[PC/Serial Monitor]
-    C -->|I2C| E[MPU6500]
-    C -->|UART| F[Neo-6M GPS]
 ```
 
 ## A. Langkah-Langkah Penggunaan
