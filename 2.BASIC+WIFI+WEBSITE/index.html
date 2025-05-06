@@ -150,6 +150,7 @@
                 <thead>
                     <tr style="background:#f1f1f1;">
                         <th style="padding:8px;border-bottom:1px solid #ddd;">Time</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd;">Device</th>
                         <th style="padding:8px;border-bottom:1px solid #ddd;">Heart Rate (bpm)</th>
                         <th style="padding:8px;border-bottom:1px solid #ddd;">SpO₂ (%)</th>
                         <th style="padding:8px;border-bottom:1px solid #ddd;">Temp (°C)</th>
@@ -243,7 +244,7 @@
             const tbody = document.querySelector('#history-table tbody');
             tbody.innerHTML = '';
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No data</td></tr>';
                 return;
             }
             // Loop data tanpa di-reverse karena sudah DESC
@@ -252,6 +253,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(row.created_at).toLocaleTimeString()}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${row.device_id ?? '--'}</td>
                     <td style="padding:6px;border-bottom:1px solid #eee;">${val.heartRate ?? '--'}</td>
                     <td style="padding:6px;border-bottom:1px solid #eee;">${val.spo2 ?? '--'}</td>
                     <td style="padding:6px;border-bottom:1px solid #eee;">${val.temp ?? '--'}</td>

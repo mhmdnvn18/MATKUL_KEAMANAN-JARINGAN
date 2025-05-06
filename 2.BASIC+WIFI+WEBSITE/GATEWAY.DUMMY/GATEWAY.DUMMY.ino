@@ -13,8 +13,11 @@ const char* supabaseUrl = "https://cvmsregwxtcvxdspxysq.supabase.co";
 const char* supabaseApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo";
 const char* supabaseTableEndpoint = "/rest/v1/sensor_data"; // ganti dengan nama tabel Anda
 
+// Tambahkan device_id (nama ESP32)
+const char* device_id = "ESP32-ROOM1"; // Ganti sesuai nama/ID ESP32 Anda
+
 // Fungsi untuk mengirim data ke Supabase
-void sendToSupabase(int heartRate, int validHeartRate, int spo2, int validSpO2, float temp) {
+void sendToSupabase(int heartRate, int validHeartRate, int spo2, int validSpO2, float temp, const char* device_id) {
   HTTPClient http;
   String url = String(supabaseUrl) + String(supabaseTableEndpoint);
   http.begin(url);
@@ -22,17 +25,17 @@ void sendToSupabase(int heartRate, int validHeartRate, int spo2, int validSpO2, 
   http.addHeader("apikey", supabaseApiKey);
   http.addHeader("Authorization", String("Bearer ") + supabaseApiKey);
 
-  // Buat JSON string untuk field sensor_value
+  // Buat JSON string untuk field sensor_value (TANPA escape)
   String sensorValue = "{";
-  sensorValue += "\\\"heartRate\\\":" + String(heartRate) + ",";
-  sensorValue += "\\\"validHeartRate\\\":" + String(validHeartRate) + ",";
-  sensorValue += "\\\"spo2\\\":" + String(spo2) + ",";
-  sensorValue += "\\\"validSpO2\\\":" + String(validSpO2) + ",";
-  sensorValue += "\\\"temp\\\":" + String(temp, 1);
+  sensorValue += "\"heartRate\":" + String(heartRate) + ",";
+  sensorValue += "\"validHeartRate\":" + String(validHeartRate) + ",";
+  sensorValue += "\"spo2\":" + String(spo2) + ",";
+  sensorValue += "\"validSpO2\":" + String(validSpO2) + ",";
+  sensorValue += "\"temp\":" + String(temp, 1);
   sensorValue += "}";
 
-  // Payload utama
-  String jsonPayload = "{\"sensor_value\":\"" + sensorValue + "\"}";
+  // Payload utama (tambahkan device_id)
+  String jsonPayload = "{\"device_id\":\"" + String(device_id) + "\",\"sensor_value\":" + sensorValue + "}";
 
   int httpResponseCode = http.POST(jsonPayload);
   if (httpResponseCode > 0) {
@@ -81,7 +84,7 @@ void loop() {
 
   // Kirim ke Supabase jika WiFi terhubung
   if (WiFi.status() == WL_CONNECTED) {
-    sendToSupabase(heartRate, validHeartRate, spo2, validSpO2, temp);
+    sendToSupabase(heartRate, validHeartRate, spo2, validSpO2, temp, device_id);
   } else {
     Serial.println("WiFi not connected, data not sent.");
   }
