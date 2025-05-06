@@ -142,11 +142,34 @@
         <div class="chart-container">
             <canvas id="healthChart"></canvas>
         </div>
+
+        <!-- History Data Table -->
+        <div class="chart-container" style="margin-top:30px;">
+            <h3>History Data</h3>
+            <table id="history-table" style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#f1f1f1;">
+                        <th style="padding:8px;border-bottom:1px solid #ddd;">Time</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd;">Heart Rate (bpm)</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd;">SpO₂ (%)</th>
+                        <th style="padding:8px;border-bottom:1px solid #ddd;">Temp (°C)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be injected here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Konfigurasi Supabase yang diperbarui
+        const supabaseUrl = 'https://cvmsregwxtcvxdspxysq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Inisialisasi Chart
         const ctx = document.getElementById('healthChart').getContext('2d');
         const chart = new Chart(ctx, {
@@ -168,25 +191,26 @@
             }
         });
 
-        // Supabase Realtime
-        const supabaseUrl = 'https://cvmsregwxtcvxdspxysq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Fungsi untuk update UI
         async function updateDashboard() {
             try {
-                const response = await fetch('https://cvmsregwxtcvxdspxysq.supabase.co/rest/v1/sensor_data?order=created_at.desc&limit=1', {
-                    headers: {
-                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo'
-                    }
-                });
-                
-                const [latestData] = await response.json();
+                // Ambil 10 data terbaru dengan urutan DESCENDING
+                const { data, error } = await supabase
+                    .from('sensor_data')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                // Reverse data untuk chart (agar urutan waktu ASC)
+                const reversedData = [...data].reverse();
+
+                // Data terbaru adalah data pertama (karena DESC)
+                const latestData = data && data.length > 0 ? data[0] : null;
                 let metrics = { heartRate: '--', spo2: '--', temp: '--' };
+
                 if (latestData && latestData.sensor_value) {
-                    // sensor_value sudah berupa objek JSON jika tipe kolom JSONB
                     metrics = latestData.sensor_value;
                 }
 
@@ -196,23 +220,44 @@
                 document.getElementById('temperature').textContent = metrics.temp ?? '--';
                 document.getElementById('last-updated').textContent = latestData ? new Date(latestData.created_at).toLocaleTimeString() : '--';
 
-                // Update chart
-                if (latestData) {
-                    chart.data.labels.push(new Date(latestData.created_at).toLocaleTimeString());
-                    chart.data.datasets[0].data.push(metrics.heartRate ?? null);
-                    if(chart.data.labels.length > 15) {
-                        chart.data.labels.shift();
-                        chart.data.datasets[0].data.shift();
-                    }
+                // Update chart dengan reversedData (ASC)
+                if (reversedData && reversedData.length > 0) {
+                    chart.data.labels = reversedData.map(d => new Date(d.created_at).toLocaleTimeString());
+                    chart.data.datasets[0].data = reversedData.map(d => d.sensor_value?.heartRate ?? null);
                     chart.update();
                 }
 
+                // Update history table dengan data asli (DESC)
+                updateHistoryTable(data);
+
                 // Check anomalies
                 checkAnomalies(metrics);
-                
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+        }
+
+        // Fungsi update tabel history
+        function updateHistoryTable(data) {
+            const tbody = document.querySelector('#history-table tbody');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data</td></tr>';
+                return;
+            }
+            // Loop data tanpa di-reverse karena sudah DESC
+            data.forEach(row => {
+                const val = row.sensor_value || {};
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(row.created_at).toLocaleTimeString()}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.heartRate ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.spo2 ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.temp ?? '--'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         // Fungsi deteksi anomali
@@ -230,17 +275,16 @@
             alertBanner.style.display = showAlert ? 'block' : 'none';
         }
 
-        // Realtime listener
-        supabase.channel('sensor_data_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'sensor_data' }, payload => {
+        // Realtime listener (hanya satu channel)
+        supabase.channel('custom-all-channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'sensor_data' }, () => {
                 updateDashboard();
             })
             .subscribe();
 
         // Initial load
         updateDashboard();
-        // Hapus/komentari interval polling jika ingin hanya realtime:
-        // setInterval(updateDashboard, 3000);
+        // setInterval(updateDashboard, 3000); // opsional polling
     </script>
 </body>
 </html>
