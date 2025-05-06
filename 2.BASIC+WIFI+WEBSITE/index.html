@@ -100,10 +100,7 @@
     <div class="dashboard">
         <div class="header">
             <h1>🩺 Real-Time Health Monitoring</h1>
-            <p style="color:#E76F51;font-weight:bold;">
-                Dashboard tidak dapat diakses langsung di production.<br>
-                Silakan gunakan backend API untuk akses data Supabase.
-            </p>
+            <p>Last updated: <span id="last-updated">Loading...</span></p>
         </div>
 
         <div class="alert-banner" id="alert-banner">
@@ -165,5 +162,131 @@
             </table>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Konfigurasi Supabase yang diperbarui
+        const supabaseUrl = 'https://cvmsregwxtcvxdspxysq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Inisialisasi Chart
+        const ctx = document.getElementById('healthChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Heart Rate (bpm)',
+                    data: [],
+                    borderColor: '#2A9D8F',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // Fungsi untuk update UI
+        async function updateDashboard() {
+            try {
+                // Ambil 10 data terbaru dengan urutan DESCENDING
+                const { data, error } = await supabase
+                    .from('sensor_data')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                // Reverse data untuk chart (agar urutan waktu ASC)
+                const reversedData = [...data].reverse();
+
+                // Data terbaru adalah data pertama (karena DESC)
+                const latestData = data && data.length > 0 ? data[0] : null;
+                let metrics = { heartRate: '--', spo2: '--', temp: '--' };
+
+                if (latestData && latestData.sensor_value) {
+                    metrics = latestData.sensor_value;
+                }
+
+                // Update real-time values
+                document.getElementById('heart-rate').textContent = metrics.heartRate ?? '--';
+                document.getElementById('spo2').textContent = metrics.spo2 ?? '--';
+                document.getElementById('temperature').textContent = metrics.temp ?? '--';
+                document.getElementById('last-updated').textContent = latestData ? new Date(latestData.created_at).toLocaleTimeString() : '--';
+
+                // Update chart dengan reversedData (ASC)
+                if (reversedData && reversedData.length > 0) {
+                    chart.data.labels = reversedData.map(d => new Date(d.created_at).toLocaleTimeString());
+                    chart.data.datasets[0].data = reversedData.map(d => d.sensor_value?.heartRate ?? null);
+                    chart.update();
+                }
+
+                // Update history table dengan data asli (DESC)
+                updateHistoryTable(data);
+
+                // Check anomalies
+                checkAnomalies(metrics);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Fungsi update tabel history
+        function updateHistoryTable(data) {
+            const tbody = document.querySelector('#history-table tbody');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No data</td></tr>';
+                return;
+            }
+            // Loop data tanpa di-reverse karena sudah DESC
+            data.forEach(row => {
+                const val = row.sensor_value || {};
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(row.created_at).toLocaleTimeString()}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${row.device_id ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.heartRate ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.spo2 ?? '--'}</td>
+                    <td style="padding:6px;border-bottom:1px solid #eee;">${val.temp ?? '--'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Fungsi deteksi anomali
+        function checkAnomalies(metrics) {
+            const alertBanner = document.getElementById('alert-banner');
+            let showAlert = false;
+            const hr = parseFloat(metrics.heartRate);
+            const spo2 = parseFloat(metrics.spo2);
+            const temp = parseFloat(metrics.temp);
+
+            if(hr < 60 || hr > 100) showAlert = true;
+            if(spo2 < 95) showAlert = true;
+            if(temp > 37.5) showAlert = true;
+
+            alertBanner.style.display = showAlert ? 'block' : 'none';
+        }
+
+        // Realtime listener (hanya satu channel)
+        supabase.channel('custom-all-channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'sensor_data' }, () => {
+                updateDashboard();
+            })
+            .subscribe();
+
+        // Initial load
+        updateDashboard();
+        // setInterval(updateDashboard, 3000); // opsional polling
+    </script>
 </body>
 </html>

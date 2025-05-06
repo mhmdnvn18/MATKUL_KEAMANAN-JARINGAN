@@ -9,16 +9,15 @@ CREATE TABLE IF NOT EXISTS sensor_data (
 
 ALTER TABLE sensor_data ENABLE ROW LEVEL SECURITY;
 
--- Production: Only allow INSERT for anon, no SELECT for public
-REVOKE ALL ON sensor_data FROM anon;
+-- Allow all (public) select/insert for anon key (for demo/dev, restrict in production!)
+CREATE POLICY "Enable read access for all users" 
+  ON sensor_data 
+  FOR SELECT 
+  USING (true);
 
-DROP POLICY IF EXISTS "Enable read access for all users" ON sensor_data;
-DROP POLICY IF EXISTS "Enable insert for all users" ON sensor_data;
-
-CREATE POLICY "Allow insert for anon only"
+CREATE POLICY "Enable insert for all users"
   ON sensor_data
   FOR INSERT
-  TO anon
   WITH CHECK (true);
 
 -- Dummy data insert example
