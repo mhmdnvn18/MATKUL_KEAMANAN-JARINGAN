@@ -9,6 +9,7 @@ const char* password = "12345678";
 // const char* serverUrl = "http://your-server-address/api/data"; // contoh: http://192.168.1.100:5000/api/data
 
 // Konfigurasi Supabase
+// Gunakan API key yang hanya punya akses INSERT (jangan gunakan service_role atau key dengan akses SELECT/UPDATE/DELETE)
 const char* supabaseUrl = "https://cvmsregwxtcvxdspxysq.supabase.co";
 const char* supabaseApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo";
 const char* supabaseTableEndpoint = "/rest/v1/sensor_data"; // ganti dengan nama tabel Anda
