@@ -1,5 +1,13 @@
 # MATKUL_KEAMANAN-JARINGAN
 
+## Wiring Diagram
+
+![Wiring Diagram](docs/wiring.png)
+
+## Dashboard Screenshot
+
+![Dashboard Screenshot](docs/dashboard.png)
+
 ## Penjelasan Program Arduino
 
 ### 1. NODE (NODE.ino)
