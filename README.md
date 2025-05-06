@@ -2,6 +2,13 @@
 
 Repositori ini berisi materi dan contoh praktikum untuk mata kuliah Keamanan Jaringan.
 
+## Langkah Percobaan
+1. Buka, pelajari dan praktikan secara langsung menggunakan perangkat anda sesuai dengan langkah-langkah pada folder `1.BASIC` 
+- [LINK](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/1.BASIC)
+
+2. Jika sudah berhasil, silahkan buka, pelajari dan praktikan secara langsung menggunakan perangkat anda sesuai dengan langkah-langkah pada folder `2.BASIC+WIFI+WEBSITE` 
+- [LINK](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/2.BASIC%2BWIFI%2BWEBSITE)
+
 ## Struktur Folder
 
 - **1.BASIC**  
