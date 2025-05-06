@@ -1,46 +1,62 @@
 # MATKUL KEAMANAN JARINGAN
 
-Repositori ini berisi materi dan contoh praktikum untuk mata kuliah Keamanan Jaringan.
+Repositori ini berisi materi, kode, dan panduan praktikum untuk mata kuliah Keamanan Jaringan, khususnya implementasi sistem monitoring kesehatan berbasis ESP32.
 
-## Langkah Percobaan
-1. Buka, pelajari dan praktikan secara langsung menggunakan perangkat anda sesuai dengan langkah-langkah pada folder `1.BASIC` 
-- [LINK](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/1.BASIC)
+---
 
-2. Jika sudah berhasil, silahkan buka, pelajari dan praktikan secara langsung menggunakan perangkat anda sesuai dengan langkah-langkah pada folder `2.BASIC+WIFI+WEBSITE` 
-- [LINK](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/2.BASIC%2BWIFI%2BWEBSITE)
+## Langkah Praktikum
+
+1. **Pelajari dan praktikkan folder `1.BASIC`**  
+   Mulai dari dasar: instalasi library, wiring, dan pengujian sensor serta komunikasi BLE antara Node dan Gateway.  
+   [Lihat Panduan & Kode →](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/1.BASIC)
+
+2. **Lanjutkan ke folder `2.BASIC+WIFI+WEBSITE`**  
+   Setelah berhasil dengan BLE, lanjutkan ke integrasi WiFi, pengiriman data ke cloud (Supabase), dan visualisasi data di dashboard website.  
+   [Lihat Panduan & Kode →](https://github.com/mhmdnvn18/MATKUL_KEAMANAN-JARINGAN/tree/main/2.BASIC%2BWIFI%2BWEBSITE)
+
+---
 
 ## Struktur Folder
 
 - **1.BASIC**  
-  Berisi materi dasar dan contoh implementasi sistem monitoring kesehatan berbasis ESP32.  
-  Subfolder penting:
-  - `NODE.RAW`: Kode untuk ESP32 Node yang membaca sensor suhu (MLX90614) dan sensor detak jantung/SpO2 (MAX30105), lalu mengirim data via BLE.
-  - `GATEWAY.RAW`: Kode untuk ESP32 Gateway yang menerima data dari Node via BLE, membaca sensor gerak (MPU6500), dan GPS (Neo-6M), serta menampilkan data ke serial monitor.
-  - `GATEWAY.NimBLE`: Alternatif implementasi Gateway menggunakan library NimBLE.
-  - `GATEWAY.DUMMY`: Contoh gateway dummy untuk pengujian.
+  Materi dan kode dasar monitoring kesehatan berbasis ESP32:
+  - `NODE.RAW`: Kode ESP32 Node (sensor suhu MLX90614 & MAX30105, BLE server).
+  - `GATEWAY.RAW`: Kode ESP32 Gateway (BLE client, sensor gerak MPU6500, GPS Neo-6M).
+  - `GATEWAY.NimBLE`: Alternatif Gateway dengan library NimBLE.
+  - `GATEWAY.DUMMY`: Gateway dummy untuk simulasi/pengujian.
 
 - **2.BASIC+WIFI+WEBSITE**  
-  Berisi pengembangan lanjutan dengan integrasi WiFi dan dashboard website:
-  - Kode ESP32 untuk mengirim data ke database (Supabase) via WiFi.
-  - Dashboard website (HTML/JS) untuk menampilkan data kesehatan secara real-time.
-  - Contoh file konfigurasi deploy ke Vercel dan skema database.
+  Pengembangan lanjut: integrasi WiFi, database Supabase, dan dashboard website.
+  - Kode ESP32 untuk kirim data ke Supabase via WiFi.
+  - Website dashboard real-time (HTML/JS).
+  - File konfigurasi deploy (Vercel) & skema database.
 
 - **LIBRARY**  
-  Kumpulan library eksternal yang digunakan (jika diperlukan secara offline).
+  Kumpulan library eksternal (jika dibutuhkan secara offline).
 
 - **Wiring Diagram.jpeg**  
-  Gambar wiring diagram ESP32 Node dan Gateway beserta koneksi sensor (lihat juga README di masing-masing folder untuk detail wiring).
+  Diagram koneksi hardware ESP32 Node & Gateway ke sensor.
+
+---
 
 ## Gambaran Sistem
 
-Sistem terdiri dari dua ESP32:
-- **Node**: Membaca data kesehatan (suhu, BPM, SpO2) dan mengirimkan via BLE.
-- **Gateway**: Menerima data dari Node, membaca sensor gerak dan GPS, lalu menampilkan ke serial monitor atau mengirim ke cloud/website.
+- **Node (ESP32):**  
+  Membaca data kesehatan (suhu, BPM, SpO2) → kirim via BLE ke Gateway.
+- **Gateway (ESP32):**  
+  Terima data Node via BLE, baca sensor gerak & GPS → tampilkan ke serial monitor atau kirim ke cloud/website.
 
-Wiring diagram dapat dilihat pada file `Wiring Diagram.jpeg`.
+Lihat wiring pada file `Wiring Diagram.jpeg` dan detail langkah di README masing-masing folder.
+
+---
 
 ## Referensi & Dokumentasi
 
-- Penjelasan detail dan langkah penggunaan tiap folder dapat dilihat pada README di masing-masing subfolder.
-- Untuk pengujian UUID BLE, gunakan [uuidgenerator.net](https://www.uuidgenerator.net/).
-- Untuk deploy dashboard website, ikuti petunjuk pada `2.BASIC+WIFI+WEBSITE/README.md`.
+- Panduan detail tiap langkah ada di README pada masing-masing subfolder.
+- Untuk generate UUID BLE: [uuidgenerator.net](https://www.uuidgenerator.net/)
+- Panduan deploy website: lihat `2.BASIC+WIFI+WEBSITE/README.md`
+
+---
+
+**Catatan:**  
+Pastikan mengikuti urutan praktik dari folder 1 ke 2, dan wiring sesuai diagram agar sistem berjalan dengan baik.
