@@ -86,5 +86,5 @@ void loop() {
     Serial.println("WiFi not connected, data not sent.");
   }
 
-  delay(1000);
+  delay(5000);
 }
