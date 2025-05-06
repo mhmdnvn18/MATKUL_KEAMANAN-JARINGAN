@@ -277,16 +277,22 @@
             alertBanner.style.display = showAlert ? 'block' : 'none';
         }
 
-        // Realtime listener (hanya satu channel)
-        supabase.channel('custom-all-channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'sensor_data' }, () => {
-                updateDashboard();
-            })
+        // Realtime listener: update hanya saat ada INSERT baru
+        const channel = supabase.channel('sensor_data-realtime')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'sensor_data' },
+                payload => {
+                    updateDashboard();
+                }
+            )
             .subscribe();
 
         // Initial load
         updateDashboard();
-        // setInterval(updateDashboard, 3000); // opsional polling
+
+        // Fallback polling jika realtime gagal (opsional, bisa diaktifkan jika perlu)
+        // setInterval(updateDashboard, 10000);
     </script>
 </body>
 </html>
