@@ -1,25 +1,74 @@
-// Kode GATEWAY (ESP32) dengan BLE, belum wifi fix
+// GATEWAY ESP32 BLE + WiFi + Supabase JSON
 #include <Wire.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEClient.h>
 #include <BLEScan.h>
 
+// --- Konfigurasi WiFi ---
+const char* ssid = "NAMA_WIFI";
+const char* password = "PASSWORD_WIFI";
+
+// --- Konfigurasi Supabase ---
+const String supabaseUrl = "https://cvmsregwxtcvxdspxysq.supabase.co";
+const String apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2bXNyZWd3eHRjdnhkc3B4eXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTUwNTEsImV4cCI6MjA2MjA5MTA1MX0.SiqgWiZtGDdqndi6Zxf6T5q9ogDCiB7AcGBh0XJjmIo";
+const String tableName = "sensor_data";
+
 // --- Konfigurasi BLE Client ---
 static BLEUUID serviceUUID("89bc34b8-c3a1-4f22-82d9-00a2559bbcc0");
 static BLEUUID charUUID("cbef4b5c-fe06-41dc-ab84-105dbe7a722c");
-
 static boolean doConnect = false;
 static boolean connected = false;
 static boolean doScan = false;
-static bool isScanning = false; // Tambahkan variabel untuk melacak status pemindaian
+static bool isScanning = false;
 static BLERemoteCharacteristic *pRemoteCharacteristic;
 static BLEAdvertisedDevice *myDevice;
 
+// Fungsi kirim data ke Supabase (format JSON string)
+void sendToSupabase(const String& jsonValue) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi not connected, skip send.");
+    return;
+  }
+  HTTPClient http;
+  String fullUrl = supabaseUrl + "/rest/v1/" + tableName;
+  http.begin(fullUrl);
+  http.addHeader("Content-Type", "application/json");
+  http.addHeader("apikey", apiKey);
+  http.addHeader("Authorization", "Bearer " + apiKey);
+
+  // Data JSON: sensor_value kolom string JSON
+  String httpRequestData = "{\"sensor_value\":" + jsonValue + "}";
+
+  int httpResponseCode = http.POST(httpRequestData);
+  if (httpResponseCode > 0) {
+    Serial.print("Supabase HTTP Response: ");
+    Serial.println(httpResponseCode);
+  } else {
+    Serial.print("Supabase HTTP Error: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+}
+
+// BLE Notify Callback
 static void notifyCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify) {
-  Serial.print("BLE Notify dari Node: ");
-  Serial.write(pData, length);
-  Serial.println();
+  // Asumsikan data BLE sudah berupa JSON string
+  String sensorData = "";
+  for (size_t i = 0; i < length; i++) {
+    sensorData += (char)pData[i];
+  }
+  Serial.print("BLE Notify (JSON): ");
+  Serial.println(sensorData);
+
+  // Validasi sederhana JSON
+  if (sensorData.startsWith("{") && sensorData.endsWith("}")) {
+    sendToSupabase(sensorData);
+  } else {
+    Serial.println("Data BLE bukan JSON, tidak dikirim ke Supabase.");
+  }
 }
 
 class MyClientCallback : public BLEClientCallbacks {
@@ -27,7 +76,6 @@ class MyClientCallback : public BLEClientCallbacks {
     connected = true;
     Serial.println("Terhubung ke BLE Node!");
   }
-
   void onDisconnect(BLEClient *pclient) {
     connected = false;
     Serial.println("Terputus dari BLE Node.");
@@ -39,16 +87,13 @@ bool connectToServer() {
   Serial.println(myDevice->getAddress().toString().c_str());
 
   BLEClient *pClient = BLEDevice::createClient();
-  Serial.println(" - Membuat client BLE");
-
   pClient->setClientCallbacks(new MyClientCallback());
-
-  // Hubungkan ke server BLE remote.
-  pClient->connect(myDevice);
-  Serial.println(" - Terhubung ke server BLE");
+  if (!pClient->connect(myDevice)) {
+    Serial.println("Gagal connect BLE.");
+    return false;
+  }
   pClient->setMTU(517);
 
-  // Dapatkan referensi ke service yang dicari di server BLE remote.
   BLERemoteService *pRemoteService = pClient->getService(serviceUUID);
   if (pRemoteService == nullptr) {
     Serial.print("Gagal menemukan UUID service: ");
@@ -56,9 +101,6 @@ bool connectToServer() {
     pClient->disconnect();
     return false;
   }
-  Serial.println(" - Service ditemukan");
-
-  // Dapatkan referensi ke characteristic di dalam service.
   pRemoteCharacteristic = pRemoteService->getCharacteristic(charUUID);
   if (pRemoteCharacteristic == nullptr) {
     Serial.print("Gagal menemukan UUID characteristic: ");
@@ -66,18 +108,9 @@ bool connectToServer() {
     pClient->disconnect();
     return false;
   }
-  Serial.println(" - Characteristic ditemukan");
-
-  if (pRemoteCharacteristic->canRead()) {
-    String value = pRemoteCharacteristic->readValue();
-    Serial.print("Nilai characteristic awal: ");
-    Serial.println(value.c_str());
-  }
-
   if (pRemoteCharacteristic->canNotify()) {
     pRemoteCharacteristic->registerForNotify(notifyCallback);
   }
-
   return true;
 }
 
@@ -85,62 +118,76 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
     Serial.print("Perangkat BLE ditemukan: ");
     Serial.println(advertisedDevice.toString().c_str());
-
     if (advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(serviceUUID)) {
       Serial.println("Perangkat dengan service yang dicari ditemukan.");
       BLEDevice::getScan()->stop();
-      isScanning = false; // Set status pemindaian menjadi false
+      isScanning = false;
       myDevice = new BLEAdvertisedDevice(advertisedDevice);
       doConnect = true;
-      doScan = false; // Stop scanning setelah perangkat ditemukan
+      doScan = false;
     }
   }
 };
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("ESP32 Gateway Started!");
 
-  // --- Setup BLE Client ---
+  // Koneksi WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Menghubungkan ke WiFi");
+  int wifiTry = 0;
+  while (WiFi.status() != WL_CONNECTED && wifiTry < 30) {
+    delay(500);
+    Serial.print(".");
+    wifiTry++;
+  }
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nTerhubung WiFi!");
+  } else {
+    Serial.println("\nGagal konek WiFi!");
+  }
+
+  // BLE
   BLEDevice::init("");
-  Serial.println("Mempersiapkan BLE Client...");
-
   BLEScan *pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   pBLEScan->setInterval(1349);
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
-  pBLEScan->start(5, false); // Scan selama 5 detik untuk pertama kali
-  isScanning = true; // Set status pemindaian menjadi true
+  pBLEScan->start(5, false);
+  isScanning = true;
   doScan = true;
 }
 
 void loop() {
-  // --- Koneksi BLE ---
+  // Reconnect WiFi jika terputus
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi terputus, reconnect...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+    delay(1000);
+    return;
+  }
+
+  // BLE connect logic
   if (doConnect) {
     if (connectToServer()) {
       Serial.println("Berhasil terhubung ke perangkat BLE.");
     } else {
-      Serial.println("Gagal terhubung! Memulai ulang pemindaian...");
-      BLEDevice::getScan()->start(5, false); // Coba scan lagi
-      isScanning = true; // Set status pemindaian menjadi true
+      Serial.println("Gagal terhubung! Scan ulang...");
+      BLEDevice::getScan()->start(5, false);
+      isScanning = true;
       doScan = true;
     }
     doConnect = false;
   }
 
-  // Jika terhubung, kita bisa melakukan sesuatu (misalnya mengirim data ke node jika diperlukan)
-  if (connected) {
-    // Contoh: Kirim data ke node (jika node memiliki characteristic untuk ditulis)
-    // if (pRemoteCharacteristic->canWrite()) {
-    //   String data = "Contoh data";
-    //   pRemoteCharacteristic->writeValue(data.c_str(), data.length());
-    //   Serial.println("Data Gateway dikirim ke Node: " + data);
-    // }
-  } else if (doScan && !isScanning) {
-    // Jika tidak terhubung, dan pemindaian belum aktif, mulai pemindaian
+  // Jika tidak terhubung BLE, scan ulang jika perlu
+  if (!connected && doScan && !isScanning) {
     Serial.println("Memulai pemindaian BLE...");
     BLEDevice::getScan()->start(5, false);
     isScanning = true;
   }
+
+  delay(100); // Loop ringan
 }
