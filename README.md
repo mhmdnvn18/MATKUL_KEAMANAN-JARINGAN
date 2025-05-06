@@ -28,12 +28,14 @@ flowchart TD
 #### 3.1 ESP32 Node
 - SparkFun MAX3010x Pulse and Proximity
   ![Sensor-MAX3010X-Sparkfun](1.Sensor-MAX3010X-Sparkfun.png)
+
 - Adafruit MLX90614 by Adafruit
   ![Sensor-MLX90614](2.Sensor-MLX90614.png)
 
 #### 3.2 ESP32 Gateway
 - MPU9250_WE by Wolfgang Ewald
   ![Sensor-MPU9250_WE](3.Sensor-MPU9250.png)
+  
 - TinyGPSPlus by Mikal Hart (untuk Neo-6M GPS)
   ![Neo-6M_TinyGPSPlus](4.Neo-6M_TinyGPSPlus.png)
 
