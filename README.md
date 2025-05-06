@@ -10,6 +10,12 @@ NODE adalah program untuk ESP32 yang berfungsi sebagai node sensor kesehatan. Fi
 - Mengirimkan data hasil pengukuran (suhu, BPM, SpO2) ke perangkat lain melalui koneksi Bluetooth Low Energy (BLE) dengan UUID service dan characteristic tertentu.
 - Data dikirim secara periodik jika jari terdeteksi pada sensor MAX30105.
 
+#### Penjelasan Baris per Baris NODE.ino
+
+```cpp
+
+```
+
 ### 2. GATEWAY (GATEWAY.ino)
 GATEWAY adalah program untuk ESP32 yang berfungsi sebagai penerima data dari NODE dan juga sebagai pengumpul data lingkungan. Fitur utama:
 - Berperan sebagai BLE client yang mencari dan terhubung ke NODE (BLE server) berdasarkan UUID service yang sama.

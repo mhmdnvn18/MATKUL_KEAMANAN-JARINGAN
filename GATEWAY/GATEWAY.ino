@@ -1,20 +1,9 @@
 // Kode GATEWAY (ESP32) dengan BLE, belum wifi fix
 #include <Wire.h>
-#include <MPU6500_WE.h>
-#include <TinyGPSPlus.h>
-#include <HardwareSerial.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEClient.h>
 #include <BLEScan.h>
-
-// --- Konfigurasi MPU6500 ---
-#define MPU6500_ADDR 0x68
-MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
-
-// --- Konfigurasi GPS ---
-TinyGPSPlus gps;
-HardwareSerial gpsSerial(2);  // UART2: RX=16, TX=17
 
 // --- Konfigurasi BLE Client ---
 static BLEUUID serviceUUID("89bc34b8-c3a1-4f22-82d9-00a2559bbcc0");
@@ -112,31 +101,6 @@ void setup() {
   Serial.begin(115200);
   Serial.println("ESP32 Gateway Started!");
 
-  // --- Setup MPU6500 ---
-  Wire.begin();
-  if (!myMPU6500.init()) {
-    Serial.println("MPU6500 tidak terdeteksi");
-  } else {
-    Serial.println("MPU6500 terhubung");
-  }
-
-  delay(1000);
-  Serial.println("Kalibrasi MPU6500... Letakkan sensor dengan tenang");
-  myMPU6500.autoOffsets();
-  Serial.println("Kalibrasi MPU6500 selesai!");
-
-  myMPU6500.enableGyrDLPF();
-  myMPU6500.setGyrDLPF(MPU6500_DLPF_6);
-  myMPU6500.setSampleRateDivider(5);
-  myMPU6500.setGyrRange(MPU6500_GYRO_RANGE_250);
-  myMPU6500.setAccRange(MPU6500_ACC_RANGE_2G);
-  myMPU6500.enableAccDLPF(true);
-  myMPU6500.setAccDLPF(MPU6500_DLPF_6);
-
-  // --- Setup GPS ---
-  gpsSerial.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17
-  Serial.println("GPS Neo-6M siap!");
-
   // --- Setup BLE Client ---
   BLEDevice::init("");
   Serial.println("Mempersiapkan BLE Client...");
@@ -152,39 +116,6 @@ void setup() {
 }
 
 void loop() {
-  // --- Data MPU6500 ---
-  xyzFloat gValue = myMPU6500.getGValues();
-  xyzFloat gyr = myMPU6500.getGyrValues();
-  float resultantG = myMPU6500.getResultantG(gValue);
-
-  Serial.println("=== Data Accel / Gyro ===");
-  Serial.print("Accelerometer (g): ");
-  Serial.print(gValue.x); Serial.print(", ");
-  Serial.print(gValue.y); Serial.print(", ");
-  Serial.println(gValue.z);
-  Serial.print("Resultant g: ");
-  Serial.println(resultantG, 2);
-
-  Serial.print("Gyroscope (°/s): ");
-  Serial.print(gyr.x); Serial.print(", ");
-  Serial.print(gyr.y); Serial.print(", ");
-  Serial.println(gyr.z);
-
-  // --- Data GPS ---
-  while (gpsSerial.available() > 0) {
-    gps.encode(gpsSerial.read());
-  }
-
-  if (gps.location.isUpdated()) {
-    Serial.println("=== Data GPS ===");
-    Serial.print("Latitude: "); Serial.println(gps.location.lat(), 6);
-    Serial.print("Longitude: "); Serial.println(gps.location.lng(), 6);
-    Serial.print("Altitude: "); Serial.print(gps.altitude.meters()); Serial.println(" m");
-    Serial.print("Satellites: "); Serial.println(gps.satellites.value());
-  } else {
-    Serial.println("GPS: mencari sinyal...");
-  }
-
   // --- Koneksi BLE ---
   if (doConnect) {
     if (connectToServer()) {
@@ -198,15 +129,13 @@ void loop() {
     doConnect = false;
   }
 
-  // Jika terhubung, kita bisa melakukan sesuatu (misalnya mengirim data dari MPU/GPS ke node jika diperlukan)
+  // Jika terhubung, kita bisa melakukan sesuatu (misalnya mengirim data ke node jika diperlukan)
   if (connected) {
-    // Contoh: Kirim data gabungan (MPU + GPS) ke node (jika node memiliki characteristic untuk ditulis)
-    // String gatewayData = "Acc:" + String(gValue.x) + "," + String(gValue.y) + "," + String(gValue.z) +
-    //                      ",Gyr:" + String(gyr.x) + "," + String(gyr.y) + "," + String(gyr.z) +
-    //                      ",Lat:" + String(gps.location.lat(), 6) + ",Lng:" + String(gps.location.lng(), 6);
+    // Contoh: Kirim data ke node (jika node memiliki characteristic untuk ditulis)
     // if (pRemoteCharacteristic->canWrite()) {
-    //   pRemoteCharacteristic->writeValue(gatewayData.c_str(), gatewayData.length());
-    //   Serial.println("Data Gateway dikirim ke Node: " + gatewayData);
+    //   String data = "Contoh data";
+    //   pRemoteCharacteristic->writeValue(data.c_str(), data.length());
+    //   Serial.println("Data Gateway dikirim ke Node: " + data);
     // }
   } else if (doScan && !isScanning) {
     // Jika tidak terhubung, dan pemindaian belum aktif, mulai pemindaian
@@ -214,7 +143,4 @@ void loop() {
     BLEDevice::getScan()->start(5, false);
     isScanning = true;
   }
-
-  Serial.println("*************");
-  delay(1000);
 }
