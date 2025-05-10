@@ -1,7 +1,7 @@
 // Kode GATEWAY (ESP32) dengan NimBLE, belum wifi fix
 #include <Wire.h>
-//#include <MPU6500_WE.h>
-// #include <TinyGPSPlus.h>
+#include <MPU6500_WE.h>
+#include <TinyGPSPlus.h>
 #include <HardwareSerial.h>
 #include <NimBLEDevice.h>
 #include <NimBLEUtils.h>
@@ -9,12 +9,12 @@
 #include <NimBLEScan.h>
 
 // --- Konfigurasi MPU6500 ---
-//#define MPU6500_ADDR 0x68
-//MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
+#define MPU6500_ADDR 0x68
+MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
 
 // --- Konfigurasi GPS ---
-//TinyGPSPlus gps;
-//HardwareSerial gpsSerial(2);  // UART2: RX=16, TX=17
+TinyGPSPlus gps;
+HardwareSerial gpsSerial(2);  // UART2: RX=16, TX=17
 
 // --- Konfigurasi NimBLE Client ---
 static NimBLEUUID serviceUUID("89bc34b8-c3a1-4f22-82d9-00a2559bbcc0");
@@ -136,7 +136,7 @@ void setup() {
   Serial.println("ESP32 Gateway Started dengan NimBLE!");
 
   // --- Setup MPU6500 ---
-  /*Wire.begin();
+  Wire.begin();
   if (!myMPU6500.init()) {
     Serial.println("MPU6500 tidak terdeteksi");
   } else {
@@ -158,7 +158,7 @@ void setup() {
 
   // --- Setup GPS ---
   gpsSerial.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17
-  Serial.println("GPS Neo-6M siap!"); */
+  Serial.println("GPS Neo-6M siap!"); 
 
   // --- Setup NimBLE Client ---
   NimBLEDevice::init("NimBLE_Client_Gateway");
@@ -176,7 +176,7 @@ void setup() {
 
 void loop() {
   // --- Data MPU6500 ---
- /* xyzFloat gValue = myMPU6500.getGValues();
+  xyzFloat gValue = myMPU6500.getGValues();
   xyzFloat gyr = myMPU6500.getGyrValues();
   float resultantG = myMPU6500.getResultantG(gValue);
 
@@ -206,7 +206,7 @@ void loop() {
     Serial.print("Satellites: "); Serial.println(gps.satellites.value());
   } else {
     Serial.println("GPS: mencari sinyal...");
-  }*/
+  }
 
   // --- Koneksi NimBLE ---
   if (doConnect) {
@@ -242,6 +242,6 @@ void loop() {
     isScanning = true;
   }
 
-  Serial.println("*************");
+  Serial.println("***********************************");
   delay(3000);
 }
