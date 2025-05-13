@@ -65,6 +65,68 @@
      ```
    - Jika berhasil, akan muncul versi Docker yang terpasang.
 
+## Apakah Perlu Menginstal WSL?
+
+- **Untuk pengguna Windows:**  
+  Docker Desktop pada Windows membutuhkan WSL 2 (Windows Subsystem for Linux versi 2) sebagai backend default untuk menjalankan container Linux.  
+  Jika WSL 2 belum terinstal, Docker Desktop akan memandu proses instalasinya saat pertama kali dijalankan.  
+  **Jadi, ya—Anda perlu menginstal WSL 2 agar Docker Desktop dapat berjalan optimal di Windows.**
+
+- **Untuk pengguna Mac:**  
+  Tidak perlu menginstal WSL. Docker Desktop berjalan langsung di atas sistem operasi Mac.
+
+## Langkah-langkah Instalasi WSL 2 untuk Docker Desktop pada Windows 11
+
+1. **Buka PowerShell sebagai Administrator**
+   - Klik kanan pada Start Menu, pilih **Windows Terminal (Admin)** atau **PowerShell (Admin)**.
+
+2. **Install WSL dan Distro Linux (misal Ubuntu)**
+   - Jalankan perintah berikut:
+     ```
+     wsl --install
+     ```
+   - Perintah ini akan menginstal WSL 2 dan Ubuntu secara otomatis.
+   - Jika diminta, restart komputer setelah proses instalasi selesai.
+
+3. **Pastikan Versi WSL adalah 2**
+   - Setelah restart, cek versi WSL dengan perintah:
+     ```
+     wsl --list --verbose
+     ```
+   - Pastikan distro Linux (misal Ubuntu) menggunakan versi 2 pada kolom "VERSION".
+   - Jika belum, ubah ke WSL 2 dengan perintah:
+     ```
+     wsl --set-version <nama-distro> 2
+     ```
+     Contoh:
+     ```
+     wsl --set-version Ubuntu 2
+     ```
+
+4. **Set WSL 2 sebagai Default**
+   - Jalankan perintah berikut:
+     ```
+     wsl --set-default-version 2
+     ```
+
+5. **Update Kernel WSL (Jika Diperlukan)**
+   - Jika muncul pesan untuk update kernel, download dan install dari:
+     [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
+
+6. **Cek Instalasi**
+   - Jalankan:
+     ```
+     wsl
+     ```
+   - Jika masuk ke terminal Linux, WSL sudah terinstal dengan benar.
+
+7. **Lanjutkan Instalasi Docker Desktop**
+   - Setelah WSL 2 aktif, install dan jalankan Docker Desktop seperti biasa.
+   - Pada pengaturan Docker Desktop, pastikan backend menggunakan WSL 2.
+
+> **Catatan:**  
+> Windows 11 biasanya sudah mendukung WSL 2 secara default, sehingga proses instalasi lebih mudah dibandingkan versi Windows sebelumnya.
+
 ## Penggunaan Dasar Docker Desktop
 
 1. **Menjalankan Docker Desktop**
@@ -89,9 +151,7 @@
      5. **Melihat Log dan Resource**
         - Klik nama container untuk melihat log, statistik penggunaan CPU/memori, dan pengaturan lainnya.
 
-## Instalasi Node-RED dan MQTT Mosquitto dengan Docker Desktop
-
-Berikut langkah-langkah instalasi Node-RED dan MQTT Mosquitto menggunakan Docker Desktop (GUI):
+## Langkah-langkah Instalasi Node-RED dan MQTT Mosquitto dengan Docker Desktop
 
 1. **Pastikan Docker Desktop sudah terinstal dan berjalan.**
 
@@ -105,7 +165,7 @@ Berikut langkah-langkah instalasi Node-RED dan MQTT Mosquitto menggunakan Docker
 
 3. **Menjalankan Container Node-RED**
    - Setelah image `nodered/node-red` tersedia di tab **Images**, klik tombol **Run** pada image tersebut.
-   - Atur port mapping:  
+   - Atur port mapping:
      - Host: `1880`, Container: `1880`
    - Beri nama container, misal: `nodered`
    - Klik **Run**.
@@ -113,8 +173,8 @@ Berikut langkah-langkah instalasi Node-RED dan MQTT Mosquitto menggunakan Docker
 
 4. **Menjalankan Container Mosquitto**
    - Setelah image `eclipse-mosquitto` tersedia di tab **Images**, klik tombol **Run** pada image tersebut.
-   - Atur port mapping:  
-     - Host: `1883`, Container: `1883`  
+   - Atur port mapping:
+     - Host: `1883`, Container: `1883`
      - Host: `9001`, Container: `9001`
    - Beri nama container, misal: `mosquitto`
    - Klik **Run**.
