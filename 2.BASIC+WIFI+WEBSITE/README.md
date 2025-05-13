@@ -18,17 +18,17 @@
 
 ## Deploy ke Vercel
 
-1. **Fork/Clone Repo**
-   - Fork atau clone repository ini ke akun GitHub Anda.
+1. **Fork/Clone Repo**  
+   Fork atau clone repository ini ke akun GitHub Anda.
 
-2. **Struktur File**
-   - File utama harus bernama `index.html` dan berada di root folder.
-   - Semua icon sudah menggunakan Font Awesome (CDN), tidak perlu file SVG icon terpisah.
+2. **Struktur File**  
+   File utama harus bernama `index.html` dan berada di root folder.  
+   Semua icon sudah menggunakan Font Awesome (CDN), tidak perlu file SVG icon terpisah.
 
-3. **Push ke GitHub**
-   - Commit dan push semua file ke repository GitHub Anda.
+3. **Push ke GitHub**  
+   Commit dan push semua file ke repository GitHub Anda.
 
-4. **Deploy ke Vercel**
+4. **Deploy ke Vercel**  
    - Buka [https://vercel.com/import/git](https://vercel.com/import/git).
    - Login dengan akun Vercel Anda.
    - Pilih repository GitHub yang sudah berisi project ini.
@@ -42,8 +42,63 @@
    - (Opsional) Tambahkan environment variable jika diperlukan.
    - Klik **Deploy**.
 
-5. **Akses Website**
-   - Setelah deploy selesai, Anda akan mendapatkan URL publik dari Vercel.
+5. **Akses Website**  
+   Setelah deploy selesai, Anda akan mendapatkan URL publik dari Vercel.
+
+---
+
+## Cara Menggunakan Supabase
+
+1. **Buat Project di Supabase**  
+   - Buka [https://app.supabase.com/](https://app.supabase.com/) dan login.
+   - Klik **New Project** dan isi detail project (nama, password, region).
+   - Tunggu hingga project selesai dibuat.
+
+2. **Buat Tabel sensor_data**  
+   - Masuk ke menu **SQL Editor** di sidebar kiri.
+   - Masukkan perintah SQL berikut untuk membuat tabel dan policy:
+     ```sql
+     DROP TABLE IF EXISTS sensor_data CASCADE;
+
+     CREATE TABLE IF NOT EXISTS sensor_data (
+         id SERIAL PRIMARY KEY,
+         device_id TEXT NOT NULL,
+         sensor_value JSONB NOT NULL,
+         created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+     );
+
+     ALTER TABLE sensor_data ENABLE ROW LEVEL SECURITY;
+
+     CREATE POLICY "Enable read access for all users" 
+       ON sensor_data 
+       FOR SELECT 
+       USING (true);
+
+     CREATE POLICY "Enable insert for all users"
+       ON sensor_data
+       FOR INSERT
+       WITH CHECK (true);
+
+     -- Dummy data insert example
+     INSERT INTO sensor_data (device_id, sensor_value)
+     VALUES
+       ('ESP32-ROOM1', '{"heartRate":78,"spo2":98,"temp":36.5}'),
+       ('ESP32-ROOM2', '{"heartRate":85,"spo2":97,"temp":36.8}'),
+       ('ESP32-ROOM1', '{"heartRate":92,"spo2":96,"temp":37.1}'),
+       ('ESP32-ROOM3', '{"heartRate":60,"spo2":99,"temp":36.2}');
+     ```
+
+3. **Ambil API URL dan API Key**  
+   - Masuk ke menu **Project Settings > API**.
+   - Salin **Project URL** dan **anon public API key**.
+   - Ganti konfigurasi di kode ESP32/website sesuai URL dan API key project Anda.
+
+4. **Kirim Data dari ESP32**  
+   - Pastikan payload JSON yang dikirim sesuai format pada contoh di bawah.
+   - Data akan otomatis masuk ke tabel `sensor_data` di Supabase.
+
+5. **Lihat Data**  
+   - Data yang masuk bisa dilihat di dashboard Supabase (Table Editor) atau pada website dashboard ini.
 
 ---
 
