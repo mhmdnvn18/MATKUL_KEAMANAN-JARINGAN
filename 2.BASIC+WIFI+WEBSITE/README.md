@@ -6,24 +6,24 @@
 1. Buka [https://github.com/join](https://github.com/join).
 2. Isi username, email, dan password sesuai instruksi.
 3. Verifikasi email Anda melalui link yang dikirim ke email.
-4. Setelah verifikasi, login ke GitHub.
+4. Login ke GitHub.
 
 ### 2. Membuat Akun Vercel
 1. Buka [https://vercel.com/signup](https://vercel.com/signup).
-2. Pilih metode pendaftaran (bisa menggunakan akun GitHub untuk integrasi lebih mudah).
-3. Ikuti instruksi hingga proses pendaftaran selesai.
-4. Setelah selesai, login ke Vercel.
+2. Pilih metode pendaftaran (disarankan menggunakan akun GitHub).
+3. Ikuti instruksi hingga selesai.
+4. Login ke Vercel.
+
+---
 
 ## Deploy ke Vercel
-
-Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
 
 1. **Fork/Clone Repo**
    - Fork atau clone repository ini ke akun GitHub Anda.
 
-2. **Pastikan Struktur File**
-   - File utama harus bernama `index.html`.
-   - Semua asset utama sudah di-embed, tidak perlu file SVG icon terpisah (icon menggunakan Font Awesome).
+2. **Struktur File**
+   - File utama harus bernama `index.html` dan berada di root folder.
+   - Semua icon sudah menggunakan Font Awesome (CDN), tidak perlu file SVG icon terpisah.
 
 3. **Push ke GitHub**
    - Commit dan push semua file ke repository GitHub Anda.
@@ -32,16 +32,14 @@ Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
    - Buka [https://vercel.com/import/git](https://vercel.com/import/git).
    - Login dengan akun Vercel Anda.
    - Pilih repository GitHub yang sudah berisi project ini.
-   - Pada form konfigurasi deploy, isi sebagai berikut:
-     - **Project Name:** `matkul-keamanan-jaringan-website`
+   - Pada form konfigurasi deploy, isi:
+     - **Project Name:** `ISI SESUAI NAMA KALIAN`
      - **Framework Preset:** Pilih **Other**
      - **Root Directory:** `./`
-     - **Build Command:** *(kosongkan, karena project ini statis dan tidak perlu build)*
-     - **Output Directory:** `.` (atau `public` jika Anda meletakkan file di folder `public`)
-     - **Install Command:** *(kosongkan, tidak perlu install dependency)*
-   - Jika ingin menambahkan environment variable:
-     - **Key:** `EXAMPLE_NAME`
-     - **Value:** `I9JU23NF394R6HH`
+     - **Build Command:** *(kosongkan)*
+     - **Output Directory:** `.` (atau `public` jika file ada di folder `public`)
+     - **Install Command:** *(kosongkan)*
+   - (Opsional) Tambahkan environment variable jika diperlukan.
    - Klik **Deploy**.
 
 5. **Akses Website**
@@ -51,8 +49,8 @@ Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
 
 ## Catatan Icon
 
-- Semua icon pada dashboard menggunakan [Font Awesome](https://fontawesome.com/).
-- Tidak perlu mengupload file SVG icon (`heart-pulse.svg`, `oxygen.svg`, `thermometer.svg`), karena sudah digantikan dengan Font Awesome di HTML.
+- Semua icon pada dashboard menggunakan [Font Awesome](https://fontawesome.com/) via CDN.
+- Tidak perlu mengupload file SVG icon (`heart-pulse.svg`, `oxygen.svg`, `thermometer.svg`).
 - Pastikan koneksi internet untuk memuat CDN Font Awesome.
 
 ---
@@ -60,7 +58,7 @@ Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
 ## Format Data ke Supabase
 
 Pastikan data yang dikirim ke Supabase (dari ESP32/Arduino) memiliki format JSON pada field `sensor_value`, **bukan string**.  
-**Mulai sekarang, tambahkan juga field `device_id` untuk identifikasi perangkat ESP32.**
+**Tambahkan juga field `device_id` untuk identifikasi perangkat ESP32.**
 
 Contoh payload yang benar:
 ```json
