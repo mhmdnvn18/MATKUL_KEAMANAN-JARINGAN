@@ -90,8 +90,7 @@
      ```
      wsl --list --verbose
      ```
-     Pastikan distro Linux menggunakan versi 2.
-    - Jika perlu, ubah ke WSL 2:
+     Pastikan distro Linux menggunakan versi 2. Jika perlu, ubah ke WSL 2:
       ```
       wsl --set-version <nama-distro> 2
       ```
