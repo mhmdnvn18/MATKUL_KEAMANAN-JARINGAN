@@ -1,5 +1,19 @@
 # Health Monitoring Dashboard
 
+## Persiapan Akun
+
+### 1. Membuat Akun GitHub
+1. Buka [https://github.com/join](https://github.com/join).
+2. Isi username, email, dan password sesuai instruksi.
+3. Verifikasi email Anda melalui link yang dikirim ke email.
+4. Setelah verifikasi, login ke GitHub.
+
+### 2. Membuat Akun Vercel
+1. Buka [https://vercel.com/signup](https://vercel.com/signup).
+2. Pilih metode pendaftaran (bisa menggunakan akun GitHub untuk integrasi lebih mudah).
+3. Ikuti instruksi hingga proses pendaftaran selesai.
+4. Setelah selesai, login ke Vercel.
+
 ## Deploy ke Vercel
 
 Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
