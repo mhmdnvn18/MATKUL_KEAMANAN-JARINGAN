@@ -3,25 +3,48 @@
 ## Penjelasan Fitur Utama pada Docker Desktop
 
 - **Containers**  
-  Container adalah instance dari image yang berjalan secara terisolasi. Container menjalankan aplikasi atau service, dan dapat dimulai, dihentikan, dihapus, atau direstart melalui Docker Desktop.
+  Container adalah instance dari image yang berjalan secara terisolasi. Container menjalankan aplikasi atau service, dan dapat dimulai, dihentikan, dihapus, atau direstart melalui Docker Desktop.  
+  *Contoh:* Container `nginx` yang berjalan di port 8080:
+  ```
+  docker run -d -p 8080:80 --name webserver nginx
+  ```
 
 - **Images**  
-  Image adalah template read-only yang berisi sistem file, dependensi, dan aplikasi yang dibutuhkan untuk menjalankan container. Anda dapat menarik (pull) image dari Docker Hub atau membuat image sendiri.
+  Image adalah template read-only yang berisi sistem file, dependensi, dan aplikasi yang dibutuhkan untuk menjalankan container. Anda dapat menarik (pull) image dari Docker Hub atau membuat image sendiri.  
+  *Contoh:* Menarik image Node-RED:
+  ```
+  docker pull nodered/node-red
+  ```
 
 - **Volumes**  
-  Volume digunakan untuk menyimpan data secara persisten di luar lifecycle container. Dengan volume, data tetap ada meskipun container dihapus atau dibuat ulang.
+  Volume digunakan untuk menyimpan data secara persisten di luar lifecycle container. Dengan volume, data tetap ada meskipun container dihapus atau dibuat ulang.  
+  *Contoh:* Membuat volume dan menggunakannya pada container:
+  ```
+  docker volume create data-volume
+  docker run -d -v data-volume:/data --name nodered nodered/node-red
+  ```
 
 - **Builds**  
-  Build adalah proses membuat image baru dari Dockerfile. Anda dapat melakukan build image custom sesuai kebutuhan aplikasi melalui menu "Builds" atau perintah `docker build`.
+  Build adalah proses membuat image baru dari Dockerfile. Anda dapat melakukan build image custom sesuai kebutuhan aplikasi melalui menu "Builds" atau perintah `docker build`.  
+  *Contoh:* Build image dari Dockerfile di folder saat ini:
+  ```
+  docker build -t my-custom-image .
+  ```
 
 - **Docker Hub**  
-  Docker Hub adalah registry online tempat berbagi dan mengelola image Docker. Anda dapat mencari, menarik, dan mengunggah image ke Docker Hub langsung dari Docker Desktop.
+  Docker Hub adalah registry online tempat berbagi dan mengelola image Docker. Anda dapat mencari, menarik, dan mengunggah image ke Docker Hub langsung dari Docker Desktop.  
+  *Contoh:* Menarik image Mosquitto dari Docker Hub:
+  ```
+  docker pull eclipse-mosquitto
+  ```
 
 - **Docker Scout**  
-  Docker Scout adalah fitur untuk menganalisis keamanan dan kerentanan pada image Docker. Scout memberikan insight dan rekomendasi untuk meningkatkan keamanan image.
+  Docker Scout adalah fitur untuk menganalisis keamanan dan kerentanan pada image Docker. Scout memberikan insight dan rekomendasi untuk meningkatkan keamanan image.  
+  *Contoh:* Analisis keamanan image dapat dilakukan melalui menu "Scout" di Docker Desktop.
 
 - **Extensions**  
-  Extensions adalah fitur tambahan yang dapat diinstal pada Docker Desktop untuk memperluas fungsionalitas, seperti integrasi dengan tools monitoring, database, atau workflow pengembangan lainnya.
+  Extensions adalah fitur tambahan yang dapat diinstal pada Docker Desktop untuk memperluas fungsionalitas, seperti integrasi dengan tools monitoring, database, atau workflow pengembangan lainnya.  
+  *Contoh:* Install extension "MongoDB" melalui menu Extensions di Docker Desktop.
 
 ## Instalasi Docker Desktop
 
@@ -65,6 +88,53 @@
         - Gunakan tombol "Start", "Stop", "Restart", atau "Delete" pada daftar container sesuai kebutuhan.
      5. **Melihat Log dan Resource**
         - Klik nama container untuk melihat log, statistik penggunaan CPU/memori, dan pengaturan lainnya.
+
+## Instalasi Node-RED dan MQTT Mosquitto dengan Docker Desktop
+
+Berikut langkah-langkah instalasi Node-RED dan MQTT Mosquitto menggunakan Docker Desktop (GUI):
+
+1. **Pastikan Docker Desktop sudah terinstal dan berjalan.**
+
+2. **Menarik (Pull) Image Node-RED dan Mosquitto**
+   - Buka Docker Desktop.
+   - Pilih tab **Images**.
+   - Klik tombol **Pull** atau **Add Image**.
+   - Masukkan nama image berikut satu per satu, lalu klik **Pull**:
+     - `nodered/node-red`
+     - `eclipse-mosquitto`
+
+3. **Menjalankan Container Node-RED**
+   - Setelah image `nodered/node-red` tersedia di tab **Images**, klik tombol **Run** pada image tersebut.
+   - Atur port mapping:  
+     - Host: `1880`, Container: `1880`
+   - Beri nama container, misal: `nodered`
+   - Klik **Run**.
+   - Buka browser dan akses `http://localhost:1880` untuk menggunakan Node-RED.
+
+4. **Menjalankan Container Mosquitto**
+   - Setelah image `eclipse-mosquitto` tersedia di tab **Images**, klik tombol **Run** pada image tersebut.
+   - Atur port mapping:  
+     - Host: `1883`, Container: `1883`  
+     - Host: `9001`, Container: `9001`
+   - Beri nama container, misal: `mosquitto`
+   - Klik **Run**.
+   - MQTT broker akan aktif di `localhost:1883`.
+
+5. **Cek Status Container**
+   - Buka tab **Containers** di Docker Desktop.
+   - Pastikan container `nodered` dan `mosquitto` berstatus **Running**.
+
+6. **Menghubungkan Node-RED ke Mosquitto**
+   - Buka editor Node-RED di browser (`http://localhost:1880`).
+   - Tambahkan node `mqtt in` atau `mqtt out`.
+   - Pada konfigurasi server MQTT, masukkan:
+     - Server: `localhost`
+     - Port: `1883`
+   - Deploy flow untuk mulai berkomunikasi dengan broker MQTT.
+
+7. **Testing**
+   - Gunakan node `inject` dan `debug` di Node-RED untuk mengirim dan menerima pesan MQTT.
+   - Anda juga dapat menggunakan aplikasi MQTT client lain (misal MQTT Explorer) untuk testing.
 
 ## Penggunaan Dasar Docker Desktop
 
