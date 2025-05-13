@@ -105,6 +105,7 @@
      ```
      Jika masuk terminal Linux, WSL sudah aktif.
 
+  7. Ketik turn windows on or off di search bar lalu tekan. Pada windows featur centang `Windows Subsystem for Linux`
 
 
 ---
