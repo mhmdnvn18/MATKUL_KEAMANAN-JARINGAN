@@ -23,7 +23,7 @@ Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
 
 2. **Pastikan Struktur File**
    - File utama harus bernama `index.html`.
-   - Pastikan semua asset (seperti `heart-pulse.svg`, `oxygen.svg`, `thermometer.svg`) ada di repository.
+   - Semua asset utama sudah di-embed, tidak perlu file SVG icon terpisah (icon menggunakan Font Awesome).
 
 3. **Push ke GitHub**
    - Commit dan push semua file ke repository GitHub Anda.
@@ -46,6 +46,14 @@ Ikuti langkah berikut untuk melakukan deploy project ini ke Vercel:
 
 5. **Akses Website**
    - Setelah deploy selesai, Anda akan mendapatkan URL publik dari Vercel.
+
+---
+
+## Catatan Icon
+
+- Semua icon pada dashboard menggunakan [Font Awesome](https://fontawesome.com/).
+- Tidak perlu mengupload file SVG icon (`heart-pulse.svg`, `oxygen.svg`, `thermometer.svg`), karena sudah digantikan dengan Font Awesome di HTML.
+- Pastikan koneksi internet untuk memuat CDN Font Awesome.
 
 ---
 
