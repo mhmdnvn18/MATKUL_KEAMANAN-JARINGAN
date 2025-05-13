@@ -91,20 +91,22 @@
      wsl --list --verbose
      ```
      Pastikan distro Linux menggunakan versi 2.
-  4. Jika perlu, ubah ke WSL 2:
-     ```
-     wsl --set-version <nama-distro> 2
-     ```
-  5. Set default ke WSL 2:
+    - Jika perlu, ubah ke WSL 2:
+      ```
+      wsl --set-version <nama-distro> 2
+      ```
+  4. Set default ke WSL 2:
      ```
      wsl --set-default-version 2
      ```
-  6. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
-  7. Jalankan:
+  5. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
+  6. Jalankan:
      ```
      wsl
      ```
      Jika masuk terminal Linux, WSL sudah aktif.
+
+
 
 ---
 
