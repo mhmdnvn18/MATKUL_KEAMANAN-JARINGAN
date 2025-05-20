@@ -10,7 +10,7 @@
 #include <ArduinoJson.h> // Library untuk parsing JSON
 
 // --- Konfigurasi WiFi ---
-const char* ssid = "............";          // Ganti dengan SSID WiFi Anda
+const char* ssid = ".............";          // Ganti dengan SSID WiFi Anda
 const char* password = "............"; // Ganti dengan password WiFi Anda
 
 // --- Konfigurasi MQTT ---
