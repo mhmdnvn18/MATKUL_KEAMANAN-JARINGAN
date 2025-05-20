@@ -154,7 +154,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
 
 **Mosquitto:**
 - Klik **Run** pada image `eclipse-mosquitto`.
-- Atur port mapping: Host `1883` → Container `1883`, Host `9001` → Container `9001`.
+- Atur port mapping: Host `1883`
 - Nama container: `mosquitto`.
 - Klik **Run**.
 - MQTT broker aktif di `localhost:1883`.
