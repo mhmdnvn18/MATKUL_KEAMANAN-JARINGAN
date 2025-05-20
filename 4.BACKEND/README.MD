@@ -68,36 +68,36 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
 
 - Sebelum instal Docker Desktop, cari **Windows Feature** dengan cara tekan **Win + S**.
 
-  1. ![Windows Feature](screenshoot/1.windows-feature.jpg)
+  ![Windows Feature](screenshoot/1.windows-feature.jpg)
 
 - Lalu cari dan ceklis **Windows Subsystem for Linux**, lalu OK. Setelah itu lanjut dengan:
-  1. Buka PowerShell sebagai Administrator.
-  2. Jalankan:
-     ```
-     wsl --install
-     ```
-     (Akan menginstal WSL 2 dan Ubuntu otomatis. Restart jika diminta.)
-  3. Cek versi WSL:
-     ```
-     wsl --list --verbose
-     ```
-     Pastikan distro Linux menggunakan versi 2. Jika perlu, ubah ke WSL 2:
-     ```
-     wsl --set-version <nama-distro> 2
-     ```
-  4. Set default ke WSL 2:
-     ```
-     wsl --set-default-version 2
-     ```
-  5. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
-  6. Jalankan:
-     ```
-     wsl
-     ```
-     Jika masuk terminal Linux, WSL sudah aktif.
-  7. Di akhir instalasinya buatlah Username dan Password.
+    1. Buka PowerShell sebagai Administrator.
+    2. Jalankan:
+       ```
+       wsl --install
+       ```
+       (Akan menginstal WSL 2 dan Ubuntu otomatis. Restart jika diminta.)
+    3. Cek versi WSL:
+       ```
+       wsl --list --verbose
+       ```
+       Pastikan distro Linux menggunakan versi 2. Jika perlu, ubah ke WSL 2:
+       ```
+       wsl --set-version <nama-distro> 2
+       ```
+    4. Set default ke WSL 2:
+       ```
+       wsl --set-default-version 2
+       ```
+    5. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
+    6. Jalankan:
+       ```
+       wsl
+       ```
+       Jika masuk terminal Linux, WSL sudah aktif.
+    7. Di akhir instalasinya buatlah Username dan Password.
 
-  2. ![WSL Aktif](screenshoot/2.WSL-On.jpg)
+  ![WSL Aktif](screenshoot/2.WSL-On.jpg)
 
 ---
 
@@ -107,7 +107,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
   - Kunjungi [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
   - Pilih versi sesuai sistem operasi (Windows/Mac).
 
-  3. ![Download Docker](screenshoot/3.Download-Docker.png)
+  1. ![Download Docker](screenshoot/3.Download-Docker.png)
 
 - **Install Docker Desktop**
   - Jalankan installer yang telah diunduh.
