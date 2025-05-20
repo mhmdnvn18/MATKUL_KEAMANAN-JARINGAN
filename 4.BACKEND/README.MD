@@ -1,5 +1,11 @@
 # Dokumentasi Instalasi dan Penggunaan Docker Desktop
 
+MQTT adalah protokol komunikasi ringan yang digunakan untuk berbagi pesan antara perangkat dalam jaringan IoT (Internet of Things). Broker adalah server yang bertanggung jawab untuk menerima, menyimpan, dan meneruskan pesan antara klien yang terhubung. Salah satu dari Server MQTT Broker adalah Mosquitto.
+
+Node-RED adalah platform berbasis flow-based programming yang menggunakan antarmuka drag-and-drop untuk membuat flow serangkaian blok atau node yang saling terhubung guna menjalankan berbagai fungsi secara otomatis.
+
+Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container dengan lebih mudah tanpa harus mengonfigurasi Docker secara manual di sistem operasi.
+
 ## Penjelasan Fitur Utama pada Docker Desktop
 
 - **Containers**  
@@ -47,13 +53,61 @@
 ---
 
 ## Tahapan Instalasi dan Penggunaan Docker Desktop, Node-RED, dan Mosquitto
-- Sebelum instal Docker Dekstop, cari **Windows Feature** dengan cara pencet **Win + S**
-- Lalu cari dan ceklis **Windows Subsystem for Linux**, lalu OK
 
-### 1. Instalasi Docker Desktop
+### 1. Instalasi WSL 2 (Khusus Windows)
+
+- **Untuk pengguna Windows:**  
+  Docker Desktop pada Windows membutuhkan WSL 2 (Windows Subsystem for Linux versi 2) sebagai backend default untuk menjalankan container Linux.  
+  Jika WSL 2 belum terinstal, Docker Desktop akan memandu proses instalasinya saat pertama kali dijalankan.  
+  **Jadi, ya—Anda perlu menginstal WSL 2 agar Docker Desktop dapat berjalan optimal di Windows.**
+
+- **Untuk pengguna Mac:**  
+  Tidak perlu menginstal WSL. Docker Desktop berjalan langsung di atas sistem operasi Mac.
+
+#### Langkah Instalasi WSL 2 di Windows 11
+
+- Sebelum instal Docker Desktop, cari **Windows Feature** dengan cara tekan **Win + S**.
+
+  1. ![windows feature](windows feature.jpg)
+
+- Lalu cari dan ceklis **Windows Subsystem for Linux**, lalu OK. Setelah itu lanjut dengan:
+  1. Buka PowerShell sebagai Administrator.
+  2. Jalankan:
+     ```
+     wsl --install
+     ```
+     (Akan menginstal WSL 2 dan Ubuntu otomatis. Restart jika diminta.)
+  3. Cek versi WSL:
+     ```
+     wsl --list --verbose
+     ```
+     Pastikan distro Linux menggunakan versi 2. Jika perlu, ubah ke WSL 2:
+     ```
+     wsl --set-version <nama-distro> 2
+     ```
+  4. Set default ke WSL 2:
+     ```
+     wsl --set-default-version 2
+     ```
+  5. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
+  6. Jalankan:
+     ```
+     wsl
+     ```
+     Jika masuk terminal Linux, WSL sudah aktif.
+  7. Di akhir instalasinya buatlah Username dan Password.
+
+  2. ![create user psw](create user psw.jpg)
+
+---
+
+### 2. Instalasi Docker Desktop
+
 - **Download Docker Desktop**
   - Kunjungi [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
   - Pilih versi sesuai sistem operasi (Windows/Mac).
+
+  3. ![download docker](Download-Docker.png)
 
 - **Install Docker Desktop**
   - Jalankan installer yang telah diunduh.
@@ -67,47 +121,6 @@
     docker --version
     ```
   - Pastikan versi Docker muncul.
-
----
-
-### 2. Instalasi WSL 2 (Khusus Windows)
-
-- **Untuk pengguna Windows:**  
-  Docker Desktop pada Windows membutuhkan WSL 2 (Windows Subsystem for Linux versi 2) sebagai backend default untuk menjalankan container Linux.  
-  Jika WSL 2 belum terinstal, Docker Desktop akan memandu proses instalasinya saat pertama kali dijalankan.  
-  **Jadi, ya—Anda perlu menginstal WSL 2 agar Docker Desktop dapat berjalan optimal di Windows.**
-
-- **Untuk pengguna Mac:**  
-  Tidak perlu menginstal WSL. Docker Desktop berjalan langsung di atas sistem operasi Mac.
-
-- **Langkah Instalasi WSL 2 di Windows 11**
-  1. Buka PowerShell sebagai Administrator.
-  2. Jalankan:
-     ```
-     wsl --install
-     ```
-     (Akan menginstal WSL 2 dan Ubuntu otomatis. Restart jika diminta.)
-  3. Cek versi WSL:
-     ```
-     wsl --list --verbose
-     ```
-     Pastikan distro Linux menggunakan versi 2. Jika perlu, ubah ke WSL 2:
-      ```
-      wsl --set-version <nama-distro> 2
-      ```
-  4. Set default ke WSL 2:
-     ```
-     wsl --set-default-version 2
-     ```
-  5. Jika diminta update kernel, download dari [https://aka.ms/wsl2kernel](https://aka.ms/wsl2kernel)
-  6. Jalankan:
-     ```
-     wsl
-     ```
-     Jika masuk terminal Linux, WSL sudah aktif.
-
-  7. Ketik turn windows on or off di search bar lalu tekan. Pada windows featur centang `Windows Subsystem for Linux`
-
 
 ---
 
