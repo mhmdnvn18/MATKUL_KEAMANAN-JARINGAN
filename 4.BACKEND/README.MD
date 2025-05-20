@@ -68,7 +68,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
 
 - Sebelum instal Docker Desktop, cari **Windows Feature** dengan cara tekan **Win + S**.
 
-  1. ![Windows Feature](screenshoot/windows%20feature.jpg)
+  1. ![Windows Feature](screenshoot/1.windows-feature.jpg)
 
 - Lalu cari dan ceklis **Windows Subsystem for Linux**, lalu OK. Setelah itu lanjut dengan:
   1. Buka PowerShell sebagai Administrator.
@@ -97,7 +97,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
      Jika masuk terminal Linux, WSL sudah aktif.
   7. Di akhir instalasinya buatlah Username dan Password.
 
-  2. ![Create User Password](screenshoot/create%20user%20psw.jpg)
+  2. ![WSL Aktif](screenshoot/2.WSL-On.jpg)
 
 ---
 
