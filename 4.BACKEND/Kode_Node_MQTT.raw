@@ -139,6 +139,6 @@ void loop() {
     Serial.println("Tidak ada jari terdeteksi. Letakkan jari Anda pada sensor.");
   }
 
-  Serial.println("----------------------------");
+  Serial.println("---------------------------");
   delay(1000);
 }
