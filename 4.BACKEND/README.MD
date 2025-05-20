@@ -43,7 +43,6 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
   ```
   docker pull eclipse-mosquitto
   ```
-
 - **Docker Scout**  
   Fitur analisis keamanan dan kerentanan pada image Docker melalui menu "Scout" di Docker Desktop.
 
@@ -107,7 +106,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
   - Kunjungi [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
   - Pilih versi sesuai sistem operasi (Windows/Mac).
 
-  1. ![Download Docker](screenshoot/3.Download-Docker.png)
+  ![Download Docker](screenshoot/3.Download-Docker.png)
 
 - **Install Docker Desktop**
   - Jalankan installer yang telah diunduh.
@@ -138,6 +137,9 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
 - Cari dan pull image berikut:
   - `nodered/node-red`
   - `eclipse-mosquitto`
+
+  ![Eclipse Mosquitto](screenshoot/5.Eclips-Mosquitto.png)
+  ![Node-RED](screenshoot/6.Node-red.png)
 
 ---
 
