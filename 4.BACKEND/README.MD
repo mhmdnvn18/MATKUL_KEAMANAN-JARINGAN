@@ -47,9 +47,10 @@
 ---
 
 ## Tahapan Instalasi dan Penggunaan Docker Desktop, Node-RED, dan Mosquitto
+- Sebelum instal Docker Dekstop, cari **Windows Feature** dengan cara pencet **Win + S**
+- Lalu cari dan ceklis **Windows Subsystem for Linux**, lalu OK
 
 ### 1. Instalasi Docker Desktop
-
 - **Download Docker Desktop**
   - Kunjungi [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
   - Pilih versi sesuai sistem operasi (Windows/Mac).
