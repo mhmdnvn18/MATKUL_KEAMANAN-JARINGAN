@@ -193,7 +193,7 @@ Docker Desktop digunakan untuk membuat, mengelola, dan menjalankan container den
 
 ---
 
-### 8. Testing
+### 8. Testing LANJUT KE FILE "Tutor Gateway BLE-WiFi with MQTT" langsung ke langkah nomor 14
 
 - Gunakan node `inject` dan `debug` di Node-RED untuk mengirim/menerima pesan MQTT.
 - Bisa juga menggunakan aplikasi MQTT client lain (misal MQTT Explorer) untuk testing.
