@@ -19,7 +19,7 @@ Ascon-128 adalah algoritma *Authenticated Encryption with Associated Data* (AEAD
 ### 🔍 Keunggulan Ascon-128 untuk IoT:
 - Efisiensi tinggi: Cocok untuk mikrokontroler dan perangkat hemat daya
 - Autentikasi data: Mencegah manipulasi dan pemalsuan selama transmisi
-- Tahan serangan fisik: Termasuk side-channel dan fault injection
+- Tahan serangan fisik: Termasuk *side-channel* dan *fault injection*
 
 ## 🔒 Fokus Keamanan Jaringan
 Ascon-128 sangat efektif dalam mengamankan komunikasi dalam jaringan IoT. Dengan *overhead* rendah dan performa tinggi, algoritma ini mampu:
