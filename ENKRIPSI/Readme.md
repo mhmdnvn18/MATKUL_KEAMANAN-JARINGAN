@@ -13,7 +13,7 @@ Beberapa algoritma kriptografi ringan yang dikenal meliputi:
 - PRESENT
 - Speck/Simon
 - GIFT
-## 🛡️ Ascon-128: Standar Keamanan Jaringan IoT Pilihan NIST
+## 🛡️ Ascon-128: Standar Keamanan Jaringan IoT
 Ascon-128 adalah algoritma Authenticated Encryption with Associated Data (AEAD) yang telah diakui dan dipilih oleh NIST sebagai standar global kriptografi ringan pada tahun 2023. Keistimewaan Ascon-128 terletak pada kemampuannya menggabungkan fungsi enkripsi dan autentikasi dalam satu proses yang efisien. Ini berarti data yang dikirim tidak hanya terjaga kerahasiaannya, tetapi juga terjamin keaslian dan integritasnya selama transmisi.
 ### 🔍 Keunggulan Ascon-128 untuk Keamanan Jaringan IoT:
 - Efisiensi Tinggi: Dirancang untuk beroperasi secara optimal pada mikrokontroler dan perangkat hemat daya, memastikan bahwa overhead komputasi dan energi untuk keamanan tetap minimal.
