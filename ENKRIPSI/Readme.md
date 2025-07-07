@@ -2,7 +2,7 @@
 Dalam ekosistem Internet of Things (IoT) yang terus berkembang, keamanan jaringan telah menjadi tantangan krusial. Perangkat IoT, seperti sensor, wearable device, dan aktuator, umumnya beroperasi dengan keterbatasan daya, memori, dan kemampuan komputasi. Oleh karena itu, penerapan algoritma kriptografi ringan menjadi sangat esensial untuk menjaga kerahasiaan dan integritas data tanpa membebani sumber daya sistem.
 
 ## ✨ Apa Itu Kriptografi Ringan?
-Kriptografi ringan adalah cabang kriptografi yang secara spesifik dirancang untuk perangkat dengan sumber daya terbatas. Algoritma ini memprioritaskan efisiensi tinggi dalam aspek-aspek berikut:
+Kriptografi ringan adalah pendekatan kriptografi yang secara spesifik dirancang untuk perangkat dengan sumber daya terbatas. Algoritma ini memprioritaskan efisiensi tinggi dalam aspek-aspek berikut:
 - Konsumsi daya rendah: Memperpanjang masa pakai baterai perangkat IoT.
 - Konsumsi memori kecil: Memungkinkan implementasi pada mikrokontroler dengan RAM terbatas.
 - Kecepatan proses yang optimal: Memastikan transmisi data yang efisien tanpa latency yang signifikan.
