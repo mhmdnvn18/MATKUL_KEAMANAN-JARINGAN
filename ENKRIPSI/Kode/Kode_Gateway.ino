@@ -16,7 +16,7 @@
 // WiFi dan MQTT
 const char* ssid = "YOUR WIFI SSID";
 const char* password = "YOUR PASSWORD";
-const char* mqtt_server = "YOUR_IP_MQTT_BROKER_";
+const char* mqtt_server = "YOUR_IP_MQTT_BROKER_"; //cek dengan ipconfig bagian wirelss
 const int mqtt_port = 1883;
 const char* mqtt_topic = "gateway/health_data";
 
