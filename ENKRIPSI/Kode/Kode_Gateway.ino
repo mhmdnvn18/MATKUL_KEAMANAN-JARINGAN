@@ -55,8 +55,8 @@ float gyroX, gyroY, gyroZ;
 // --- Ascon Encryption ---
 Ascon128 ascon;
 // Kunci dan IV 128-bit. PENTING: Ganti dengan nilai aman Anda sendiri dan pastikan sama dengan di sisi dekripsi.
-uint8_t ascon_key[16] = {ASK AI FOR KEY};
-uint8_t ascon_iv[16]  = {ASK AI FOR KEY};
+uint8_t ascon_key[16] = { ASK AI FOR KEY };
+uint8_t ascon_iv[16]  = { ASK AI FOR KEY };
 
 String bytesToHexString(const uint8_t* bytes, size_t len) {
   String str = "";
