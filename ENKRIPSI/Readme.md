@@ -21,4 +21,3 @@ Ascon-128 adalah bagian dari keluarga algoritma kriptografi ringan yang dirancan
 - Tahan Serangan Fisik: Mampu menahan berbagai jenis serangan fisik, termasuk side-channel attacks (serangan yang menganalisis informasi seperti konsumsi daya atau waktu eksekusi) dan fault injection (serangan yang menginduksi kesalahan pada perangkat keras), yang seringkali menjadi ancaman serius di lingkungan IoT yang rentan.
 - Melindungi data dari intersepsi dan modifikasi: Enkripsi memastikan kerahasiaan data, sementara autentikasi mencegah perubahan data oleh penyerang.
 - Menjamin integritas pesan melalui tag autentikasi: Setiap pesan dilengkapi dengan tag unik yang memverifikasi bahwa data tidak diubah selama transmisi. Jika ada modifikasi, tag tidak akan cocok, dan pesan akan ditolak.
-- Mengurangi risiko serangan replay dan DDoS
