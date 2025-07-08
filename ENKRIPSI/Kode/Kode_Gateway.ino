@@ -8,7 +8,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <MPU6050_WE.h> // Sesuaikan MPU yg kalian gunakan (MPU6500/9250 warna MERAH MPU6050 warna HIJAU)
+#include <MPU6050_WE.h> // Sesuaikan MPU yg kalian gunakan (MPU9250 warna MERAH, MPU6050 warna BIRU)
 #include <Crypto.h>
 #include <CryptoLW.h>
 #include <Ascon128.h>
@@ -16,7 +16,7 @@
 // WiFi dan MQTT
 const char* ssid = "YOUR WIFI SSID";
 const char* password = "YOUR PASSWORD";
-const char* mqtt_server = "YOUR_IP_MQTT_BROKER_"; //cek dengan ipconfig bagian wirelss
+const char* mqtt_server = "YOUR_IP_MQTT_BROKER_"; //cek dengan ipconfig bagian wireless
 const int mqtt_port = 1883;
 const char* mqtt_topic = "gateway/health_data";
 
@@ -29,8 +29,8 @@ HardwareSerial gpsSerial(2);
 const long gpsReadInterval = 1000;
 
 // BLE NimBLE
-static NimBLEUUID serviceUUID("YOUR UUID");
-static NimBLEUUID charUUID("YOUR UUID");
+static NimBLEUUID serviceUUID("YOUR UUID"); //Harus sama dengan NODE
+static NimBLEUUID charUUID("YOUR UUID"); //Harus sama dengan NODE
 
 static bool doConnect = false;
 static bool connected = false;
