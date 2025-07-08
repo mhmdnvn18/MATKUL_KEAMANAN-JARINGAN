@@ -1,0 +1,42 @@
+// Ambil object 'Ascon' dari library yang sudah dimuat di global context
+const { Ascon } = global.get('ascon');
+
+// --- KONFIGURASI: HARUS SAMA PERSIS DENGAN DI ESP32 ---
+const key = Buffer.from([Samakan Key Dengan Kode Gateway]);
+const nonce = Buffer.from([Samakan Key Dengan Kode Gateway]);
+// -----------------------------------------------------
+const encrypted_data = msg.payload;
+
+if (!encrypted_data || !encrypted_data.ciphertext || !encrypted_data.tag) {
+    node.error("Invalid payload format. Missing 'ciphertext' or 'tag'.", msg);
+    return null;
+}
+
+// 1. Ubah string HEX dari payload kembali menjadi Buffer
+const ciphertext_buffer = Buffer.from(encrypted_data.ciphertext, 'hex');
+const tag_buffer = Buffer.from(encrypted_data.tag, 'hex');
+
+// 2. Gabungkan ciphertext dan tag
+const combined_payload = Buffer.concat([ciphertext_buffer, tag_buffer]);
+
+try {
+    // 3. Dekripsi data
+    const decrypted_array = Ascon.decrypt(key, nonce, combined_payload);
+    
+    // 4. --- PERBAIKAN DI SINI ---
+    // Ubah hasil dekripsi (array byte) menjadi string JSON yang valid
+    const decrypted_string = Buffer.from(decrypted_array).toString('utf8');
+    
+    // 5. Set msg.payload dengan string JSON yang sudah bersih
+    msg.payload = decrypted_string;
+    
+    node.status({fill:"green", shape:"dot", text:"Decryption OK"});
+    node.warn("Decrypted output (Correct): " + msg.payload); // Untuk debugging
+    return msg;
+    
+} catch (e) {
+    node.error("Decryption FAILED! Tag mismatch or incompatible libraries.", msg);
+    node.error(e.message); 
+    node.status({fill:"red", shape:"ring", text:"Decryption FAILED"});
+    return null;
+}
