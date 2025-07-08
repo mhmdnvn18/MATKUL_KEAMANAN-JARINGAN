@@ -8,7 +8,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <MPU6050_WE.h> // Tentukan MPU yg kalian gunakan (MPU6500/9250 warna MERAH MPU6050 warna HIJAU)
+#include <MPU6050_WE.h> // Sesuaikan MPU yg kalian gunakan (MPU6500/9250 warna MERAH MPU6050 warna HIJAU)
 #include <Crypto.h>
 #include <CryptoLW.h>
 #include <Ascon128.h>
